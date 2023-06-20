@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.HomeActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.application.MainApp;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.UserEntity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -59,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean checkUser(String name, String password) {
-        boolean isValid = false;
+        /*boolean isValid = false;
         try {
 
             File fileR = new File(MainApp.getContext().getFilesDir(), "users.txt");
@@ -85,7 +87,10 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        return isValid;
+        return isValid;*/
+        UserEntity user = AppState.getInstance().getDb().userDao().findByUsername(name);
+        //TODO: HASHOVATI PASSWORD
+        return user != null && user.getPassword().equals(password);
     }
 
     private boolean checkPassword(String password) {
