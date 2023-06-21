@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="45dp"
         android:text="Kategorije"
         android:textColor="@color/black"
         android:textSize="20sp" />
@@ -29,6 +29,17 @@
         android:layout_height="match_parent"
         android:layout_below="@id/searchEditText"
         android:layout_marginTop="8dp"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/categoryProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchEditText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="78dp"
+        android:layout_marginEnd="201dp" />
 
 </RelativeLayout>
