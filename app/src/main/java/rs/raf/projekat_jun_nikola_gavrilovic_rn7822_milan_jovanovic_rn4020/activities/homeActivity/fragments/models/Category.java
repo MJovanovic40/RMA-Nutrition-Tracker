@@ -4,14 +4,14 @@ import android.graphics.Bitmap;
 
 import java.util.List;
 
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Meal;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class Category {
 
     private Bitmap image;
     private String nazivKategorije;
     private String opisKategorije;
-    private List<Meal> listaJela;
+    private List<Food> listaJela;
 
     public Category() {
     }
@@ -46,11 +46,11 @@ public class Category {
         this.opisKategorije = opisKategorije;
     }
 
-    public List<Meal> getListaJela() {
+    public List<Food> getListaJela() {
         return listaJela;
     }
 
-    public void setListaJela(List<Meal> listaJela) {
+    public void setListaJela(List<Food> listaJela) {
         this.listaJela = listaJela;
     }
 }

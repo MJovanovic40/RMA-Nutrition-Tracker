@@ -1,5 +1,7 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.CategoryFoodActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.Category;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.CategoryAdapter;
 
@@ -37,11 +40,18 @@ public class HomeFragment extends Fragment {
         categoryAdapter = new CategoryAdapter(categoryList, new CategoryAdapter.OnCategoryClickListener() {
             @Override
             public void onCategoryClick(Category category) {
-                Toast.makeText(requireContext(), "Kliknuli ste na kategoriju: " + category.getNazivKategorije(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(requireContext(), CategoryFoodActivity.class);
+                intent.putExtra("categoryName", category.getNazivKategorije());
+                startActivity(intent);
             }
 
             public void onCategoryOptionsClick(Category category) {
-                Toast.makeText(requireContext(), "Kliknuli ste na opcije za kategoriju: " + category.getNazivKategorije(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Opis kategorije");
+                builder.setMessage(category.getOpisKategorije());
+                builder.setPositiveButton("OK", null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
