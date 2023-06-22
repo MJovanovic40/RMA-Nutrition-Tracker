@@ -21,6 +21,7 @@ public class FoodActivity extends AppCompatActivity {
     private TextView videoLinkTextView;
     private TextView ingredientsTextView;
     private Button saveButton;
+    private TextView caloriesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +39,43 @@ public class FoodActivity extends AppCompatActivity {
         videoLinkTextView = findViewById(R.id.videoLinkTextView);
         ingredientsTextView = findViewById(R.id.ingredientsTextView);
         saveButton = findViewById(R.id.saveButton);
+        caloriesTextView = findViewById(R.id.caloriesTextView);
 
         // TODO: dohvati food data i popuni sve
         if(intent != null){
             foodNameTextView.setText(intent.getStringExtra("foodName"));
         }
 
-        categoryTextView.setText("Category");
-        oblastTextView.setText("Field");
-        instructionsTextView.setText("Preparation Instructions");
-        tagsTextView.setText("Tags");
-        videoLinkTextView.setText("Video Link");
-        ingredientsTextView.setText("Ingredients");
+        proveriPolja();
+
 
         saveButton.setOnClickListener(v -> {
             // TODO: odradi saveButton akciju
         });
+    }
+
+    public void proveriPolja(){
+        if(categoryTextView.getText().equals("")){
+            categoryTextView.setText("Not available");
+        }
+        if(oblastTextView.getText().equals("")){
+            oblastTextView.setText("Not available");
+        }
+        if(caloriesTextView.getText().equals("")){
+            caloriesTextView.setText("Not available");
+        }
+        if(instructionsTextView.getText().equals("")){
+            instructionsTextView.setText("Not available");
+        }
+        if(tagsTextView.getText().equals("")){
+            tagsTextView.setText("Not available");
+        }
+        if(videoLinkTextView.getText().equals("")){
+            videoLinkTextView.setText("Not available");
+        }
+        if(ingredientsTextView.getText().equals("")){
+            ingredientsTextView.setText("Not available");
+        }
     }
 }
 

@@ -17,6 +17,7 @@ public class Food {
     private List<String> tagovi;
     private String linkSnimku;
     private List<String> sastojci;
+    private int calories;
 
 
     public Food() {
@@ -55,5 +56,61 @@ public class Food {
 
     public void setImage(Bitmap image) {
         this.image = image;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getOblast() {
+        return oblast;
+    }
+
+    public void setOblast(String oblast) {
+        this.oblast = oblast;
+    }
+
+    public String getInstrukcije() {
+        return instrukcije;
+    }
+
+    public void setInstrukcije(String instrukcije) {
+        this.instrukcije = instrukcije;
+    }
+
+    public List<String> getTagovi() {
+        return tagovi;
+    }
+
+    public void setTagovi(List<String> tagovi) {
+        this.tagovi = tagovi;
+    }
+
+    public String getLinkSnimku() {
+        return linkSnimku;
+    }
+
+    public void setLinkSnimku(String linkSnimku) {
+        this.linkSnimku = linkSnimku;
+    }
+
+    public List<String> getSastojci() {
+        return sastojci;
+    }
+
+    public void setSastojci(List<String> sastojci) {
+        this.sastojci = sastojci;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
     }
 }

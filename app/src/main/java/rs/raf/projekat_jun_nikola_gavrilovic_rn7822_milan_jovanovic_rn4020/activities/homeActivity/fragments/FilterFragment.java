@@ -68,7 +68,6 @@ public class FilterFragment extends Fragment {
                 Intent intent = new Intent(getContext(), FoodActivity.class);
                 intent.putExtra("foodName", food.getIme());
                 startActivity(intent);
-                Toast.makeText(getContext(), "Teksttttttttttttttttttttttttt", Toast.LENGTH_SHORT).show();
             }
         });
         foodRecyclerView.setAdapter(foodAdapter);

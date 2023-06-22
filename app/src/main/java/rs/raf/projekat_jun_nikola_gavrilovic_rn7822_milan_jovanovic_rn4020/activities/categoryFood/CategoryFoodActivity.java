@@ -77,7 +77,6 @@ public class CategoryFoodActivity extends AppCompatActivity {
                 Intent intent = new Intent(CategoryFoodActivity.this, FoodActivity.class);
                 intent.putExtra("foodName", food.getIme());
                 startActivity(intent);
-                Toast.makeText(CategoryFoodActivity.this, "Nestooooooo", Toast.LENGTH_SHORT).show();
             }
         });
         foodRecyclerView.setAdapter(foodAdapter);
