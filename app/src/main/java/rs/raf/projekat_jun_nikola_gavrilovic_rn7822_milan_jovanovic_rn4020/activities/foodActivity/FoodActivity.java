@@ -41,8 +41,11 @@ public class FoodActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.saveButton);
         caloriesTextView = findViewById(R.id.caloriesTextView);
 
+
+
         // TODO: dohvati food data i popuni sve
         if(intent != null){
+            System.out.println(intent.getStringExtra("foodId"));
             foodNameTextView.setText(intent.getStringExtra("foodName"));
         }
 

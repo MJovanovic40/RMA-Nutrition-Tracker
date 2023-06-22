@@ -61,7 +61,7 @@ public class FilterFragment extends Fragment {
         foodRecyclerView = view.findViewById(R.id.itemRecyclerView);
 
         foodList = new ArrayList<>();
-        foodList.add(new Food("nesto", "opis"));
+        foodList.add(new Food("nesto", "opis", "1"));
         foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
             @Override
             public void onFoodClick(Food food) {

@@ -3,7 +3,7 @@ package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.
 public class MealResponse {
     private String strMeal;
     private String strMealThumb;
-    private int idMeal;
+    private String idMeal;
 
     public MealResponse() {
     }
@@ -24,11 +24,11 @@ public class MealResponse {
         this.strMealThumb = strMealThumb;
     }
 
-    public int getIdMeal() {
+    public String getIdMeal() {
         return idMeal;
     }
 
-    public void setIdMeal(int idMeal) {
+    public void setIdMeal(String idMeal) {
         this.idMeal = idMeal;
     }
 }

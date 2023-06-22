@@ -8,6 +8,7 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activ
 
 public class Food {
 
+    private String id;
     private String ime;
     private String opis;
     private Category category;
@@ -23,9 +24,10 @@ public class Food {
     public Food() {
     }
     /** Konstruktor za jela po kategorijama (Pocetna Strana) */
-    public Food(String ime, String opis) {
+    public Food(String ime, String opis, String id) {
         this.ime = ime;
         this.opis = opis;
+        this.id = id;
     }
 
     /** Konstruktor za Lista Jela */
@@ -112,5 +114,13 @@ public class Food {
 
     public void setCalories(int calories) {
         this.calories = calories;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

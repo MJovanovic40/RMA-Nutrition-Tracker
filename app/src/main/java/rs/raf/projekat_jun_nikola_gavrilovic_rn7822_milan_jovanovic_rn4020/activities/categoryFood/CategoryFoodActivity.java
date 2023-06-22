@@ -76,6 +76,8 @@ public class CategoryFoodActivity extends AppCompatActivity {
             public void onFoodClick(Food food) {
                 Intent intent = new Intent(CategoryFoodActivity.this, FoodActivity.class);
                 intent.putExtra("foodName", food.getIme());
+                intent.putExtra("foodId", food.getId());
+
                 startActivity(intent);
             }
         });
@@ -99,7 +101,7 @@ public class CategoryFoodActivity extends AppCompatActivity {
                 }
 
                 for (MealResponse c : mealResponseWrapper.getMeals()) {
-                    Food food = new Food(c.getStrMeal(), "No desc");
+                    Food food = new Food(c.getStrMeal(), "No desc", c.getIdMeal());
                     foodList.add(food);
                 }
                 updateAdapter(foodList);
