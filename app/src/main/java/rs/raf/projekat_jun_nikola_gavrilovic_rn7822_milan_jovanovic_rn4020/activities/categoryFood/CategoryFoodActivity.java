@@ -1,8 +1,6 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood;
 
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,14 +8,12 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +22,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.Category;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.CategoryAdapter;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponse;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity.FoodActivity;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponseWrapper;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class CategoryFoodActivity extends AppCompatActivity {
 
@@ -42,7 +35,6 @@ public class CategoryFoodActivity extends AppCompatActivity {
     private EditText searchEditText;
     private List<Food> foodList;
     private TextView categoryTitleTextView;
-
 
     private MealProvider mealProvider;
 
@@ -66,12 +58,10 @@ public class CategoryFoodActivity extends AppCompatActivity {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -81,8 +71,15 @@ public class CategoryFoodActivity extends AppCompatActivity {
         });
 
         foodList = new ArrayList<>();
-
-        foodAdapter = new FoodAdapter(foodList);
+        foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
+            @Override
+            public void onFoodClick(Food food) {
+                Intent intent = new Intent(CategoryFoodActivity.this, FoodActivity.class);
+                intent.putExtra("foodName", food.getIme());
+                startActivity(intent);
+                Toast.makeText(CategoryFoodActivity.this, "Nestooooooo", Toast.LENGTH_SHORT).show();
+            }
+        });
         foodRecyclerView.setAdapter(foodAdapter);
 
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
@@ -116,25 +113,17 @@ public class CategoryFoodActivity extends AppCompatActivity {
         });
     }
 
-    private void updateAdapter(List<Food> foodList){
-        foodAdapter = new FoodAdapter(foodList);
-        foodRecyclerView.setAdapter(foodAdapter);
-
-        /*categoryRecyclerView.setVisibility(View.VISIBLE);
-        categoryProgressBar.setVisibility(View.GONE);*/
+    private void updateAdapter(List<Food> foodList) {
+        foodAdapter.setItems(foodList);
     }
 
-
     private void performSearch(String searchQuery) {
-        // Ovde implementirajte logiku pretrage jela po nazivu
-        // Ažurirajte foodList i foodAdapter sa rezultatima pretrage
-
-        if(foodList == null) return;
+        if (foodList == null) return;
 
         List<Food> satisfiedFoodList = new ArrayList<>();
 
-        for(Food f: foodList) {
-            if(f.getIme().toLowerCase().startsWith(searchQuery.toLowerCase())){
+        for (Food f : foodList) {
+            if (f.getIme().toLowerCase().startsWith(searchQuery.toLowerCase())) {
                 satisfiedFoodList.add(f);
             }
         }
@@ -142,5 +131,3 @@ public class CategoryFoodActivity extends AppCompatActivity {
         updateAdapter(satisfiedFoodList);
     }
 }
-
-

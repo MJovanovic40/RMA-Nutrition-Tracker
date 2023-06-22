@@ -27,6 +27,7 @@
         <activity android:name=".activities.loginActivity.LoginActivity"></activity>
         <activity android:name=".activities.homeActivity.HomeActivity"></activity>
         <activity android:name=".activities.categoryFood.CategoryFoodActivity"></activity>
+        <activity android:name=".activities.foodActivity.FoodActivity"></activity>
     </application>
 
 </manifest>

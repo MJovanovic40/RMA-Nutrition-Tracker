@@ -1,83 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:padding="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:id="@+id/filterLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <RadioGroup
+        android:id="@+id/sortRadioGroup"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
         android:orientation="horizontal"
-        android:padding="8dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RadioGroup
-            android:id="@+id/sortRadioGroup"
-            android:layout_width="wrap_content"
+        <RadioButton
+            android:id="@+id/sortRadioButton"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Sortiraj jela abecedno" />
 
-            <RadioButton
-                android:id="@+id/alphaRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sortiraj abecedno" />
+    </RadioGroup>
 
-        </RadioGroup>
+    <Spinner
+        android:id="@+id/dropdown_menu"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sortRadioGroup"
+        app:layout_constraintTop_toTopOf="@+id/sortRadioGroup" />
 
-        <EditText
-            android:id="@+id/filterNameEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Filtriraj po nazivu"
-            android:inputType="text"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+    <EditText
+        android:id="@+id/searchEditText"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:hint="Pretraga po nazivu"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sortRadioGroup" />
 
-        <EditText
-            android:id="@+id/filterTagEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Filtriraj po tagu"
-            android:inputType="text"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
-
-    </LinearLayout>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/filterSpinner"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:background="#FFBB86FC"
-        android:elevation="4dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" >
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchEditText"
+        app:layout_constraintWidth_default="wrap" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kategorije" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Oblasti" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sastojci" />
-
-    </com.google.android.material.tabs.TabLayout>
-
-        <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/itemRecyclerView"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filterSpinner" />
 
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

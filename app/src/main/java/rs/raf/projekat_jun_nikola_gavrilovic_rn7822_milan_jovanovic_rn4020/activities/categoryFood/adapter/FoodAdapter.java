@@ -12,16 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.Category;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder> {
 
     private List<Food> foodList;
-    private List<Food> filteredList; // Nova lista za filtrirane stavke
+    private List<Food> filteredList;
+    private OnFoodClickListener onFoodClickListener;
 
-    public FoodAdapter(List<Food> foodList) {
+    public interface OnFoodClickListener {
+        void onFoodClick(Food food);
+    }
+
+    public FoodAdapter(List<Food> foodList, OnFoodClickListener onFoodClickListener) {
         this.foodList = foodList;
-        this.filteredList = new ArrayList<>(foodList); // Kopiranje svih stavki u filtriranu listu
+        this.filteredList = new ArrayList<>(foodList);
+        this.onFoodClickListener = onFoodClickListener;
     }
 
     @NonNull
@@ -34,7 +41,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         Food food = filteredList.get(position);
-        holder.bind(food);
+        holder.bind(food, onFoodClickListener);
     }
 
     @Override
@@ -43,9 +50,9 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     }
 
     public void setItems(List<Food> foodList) {
-        filteredList.clear(); // Očistite filtriranu listu
-        filteredList.addAll(foodList); // Dodajte nove stavke u filtriranu listu
-        notifyDataSetChanged(); // Osvežite prikaz
+        filteredList.clear();
+        filteredList.addAll(foodList);
+        notifyDataSetChanged();
     }
 
     static class FoodViewHolder extends RecyclerView.ViewHolder {
@@ -59,9 +66,19 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
         }
 
-        public void bind(Food food) {
+        public void bind(Food food, OnFoodClickListener onFoodClickListener) {
             nameTextView.setText(food.getIme());
             descriptionTextView.setText(food.getOpis());
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        onFoodClickListener.onFoodClick(food);
+                    }
+                }
+            });
         }
     }
 }
