@@ -8,7 +8,7 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.entet
 
 public class Category {
 
-    private Bitmap image;
+    private String image;
     private String nazivKategorije;
     private String opisKategorije;
     private List<Food> listaJela;
@@ -16,17 +16,17 @@ public class Category {
     public Category() {
     }
 
-    public Category(Bitmap image, String nazivKategorije, String opisKategorije) {
+    public Category(String image, String nazivKategorije, String opisKategorije) {
         this.image = image;
         this.nazivKategorije = nazivKategorije;
         this.opisKategorije = opisKategorije;
     }
 
-    public Bitmap getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

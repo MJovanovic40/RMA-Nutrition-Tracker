@@ -1,17 +1,33 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.squareup.picasso.Picasso;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activitySaveFood.SaveFoodActivity;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
 
 public class FoodActivity extends AppCompatActivity {
+
+    private MealProvider mealProvider = new MealProvider();
 
     private TextView foodNameTextView;
     private TextView categoryTextView;
@@ -46,11 +62,35 @@ public class FoodActivity extends AppCompatActivity {
 
         // TODO: dohvati food data i popuni sve
         if(intent != null){
-            System.out.println(intent.getStringExtra("foodId"));
             foodNameTextView.setText(intent.getStringExtra("foodName"));
         }
 
         proveriPolja();
+
+        //Fetch food based on id
+        this.mealProvider.getMealService().fetchMealById(intent.getStringExtra("foodId")).enqueue(new Callback<DetailedMealResponseWrapper>() {
+            @Override
+            public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                assert response.body() != null;
+                DetailedMealResponse meal = response.body().getMeals().get(0);
+
+                categoryTextView.setText(meal.getStrCategory());
+                oblastTextView.setText(meal.getStrArea());
+                //foodImageView.setImageURI(Uri.parse(meal.getStrMealThumb()));
+                Picasso.get().load(meal.getStrMealThumb()).into(foodImageView);
+                instructionsTextView.setText(meal.getStrInstructions());
+                tagsTextView.setText(meal.getStrTags());
+                videoLinkTextView.setText(meal.getStrYoutube());
+                videoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+            }
+        });
 
 
         saveButton.setOnClickListener(v -> {

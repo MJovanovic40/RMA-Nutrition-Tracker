@@ -97,33 +97,10 @@ public class HomeFragment extends Fragment {
                 }
 
                 for(CategoryResponse c: categoryResponses.getCategories()) {
-                    URL url;
-                    try {
-                        url = new URL(c.getStrCategoryThumb());
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    Category category;
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Category category = new Category(BitmapFactory.decodeStream(url.openConnection().getInputStream()), c.getStrCategory(), c.getStrCategoryDescription());
-                                categories.add(category);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    });
-                    thread.start();
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+                    Category category = new Category(c.getStrCategoryThumb(), c.getStrCategory(), c.getStrCategoryDescription());
+                    categories.add(category);
+                    updateAdapter(categories);
                 }
-                updateAdapter(categories);
             }
 
             @Override

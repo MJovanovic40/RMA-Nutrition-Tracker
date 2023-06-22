@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
@@ -83,7 +85,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
 
         public void bind(Category category) {
-            slikaKategorije.setImageBitmap(category.getImage());
+            //slikaKategorije.setImageBitmap(category.getImage());
+            Picasso.get().load(category.getImage()).into(slikaKategorije);
             nazivKategorije.setText(category.getNazivKategorije());
         }
     }
