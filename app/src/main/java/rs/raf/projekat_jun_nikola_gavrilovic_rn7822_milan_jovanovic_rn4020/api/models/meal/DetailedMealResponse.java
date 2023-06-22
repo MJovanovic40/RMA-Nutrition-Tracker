@@ -506,6 +506,27 @@ public class DetailedMealResponse {
         }
     }
 
+    public void setMeasure(int index, String measure) {
+        try {
+            Field field = getClass().getDeclaredField("strMeasure" + index);
+            field.setAccessible(true);
+            field.set(this, measure);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getMeasure(int index) {
+        try {
+            Field field = getClass().getDeclaredField("strMeasure" + index);
+            field.setAccessible(true);
+            return (String) field.get(this);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String getSastojci(){
         StringBuilder builder = new StringBuilder();
         for(int i = 1; i <= 20; i++){
@@ -513,6 +534,7 @@ public class DetailedMealResponse {
             if (ingredient == null || ingredient.isEmpty()) {
                 continue;
             }
+            builder.append(getMeasure(i)).append(" ");
             builder.append(getIngredient(i)).append(", ");
         }
         if(builder.length() > 2){

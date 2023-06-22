@@ -22,13 +22,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activitySaveFood.SaveFoodActivity;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.calorie.CalorieResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.CalorieProvider;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
 
 public class FoodActivity extends AppCompatActivity {
 
     private MealProvider mealProvider = new MealProvider();
+    private CalorieProvider calorieProvider = new CalorieProvider();
 
     private TextView foodNameTextView;
     private TextView categoryTextView;
@@ -83,9 +86,31 @@ public class FoodActivity extends AppCompatActivity {
                 tagsTextView.setText(meal.getStrTags());
                 videoLinkTextView.setText(meal.getStrYoutube());
                 videoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
-                ingredientsTextView.setText(meal.getSastojci());
+                ingredientsTextView.setText(meal.getSastojci().replaceAll(", ", ",\n"));
 
+                calorieProvider.getCalorieService().fetchCaloriesForMeal(meal.getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                        List<CalorieResponse> calorieResponseList = response.body();
 
+                        float calories = 0;
+
+                        if(calorieResponseList == null || calorieResponseList.size() == 0) {
+                            return;
+                        }
+
+                        for(CalorieResponse calorie: calorieResponseList) {
+                            calories += calorie.getCalories();
+                        }
+                        String caloriesString = String.valueOf(calories) + " Calories";
+                        caloriesTextView.setText(caloriesString);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                    }
+                });
             }
 
             @Override
@@ -93,7 +118,9 @@ public class FoodActivity extends AppCompatActivity {
 
             }
         });
+        /**/
 
+        proveriPolja();
 
         saveButton.setOnClickListener(v -> {
             Intent intentSave = new Intent(FoodActivity.this, SaveFoodActivity.class);
