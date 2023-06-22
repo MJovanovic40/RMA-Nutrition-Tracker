@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -82,6 +83,7 @@ public class FoodActivity extends AppCompatActivity {
                 tagsTextView.setText(meal.getStrTags());
                 videoLinkTextView.setText(meal.getStrYoutube());
                 videoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                ingredientsTextView.setText(meal.getSastojci());
 
 
             }
