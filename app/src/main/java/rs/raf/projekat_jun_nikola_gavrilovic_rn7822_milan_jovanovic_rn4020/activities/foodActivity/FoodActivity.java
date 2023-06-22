@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activitySaveFood.SaveFoodActivity;
 
 public class FoodActivity extends AppCompatActivity {
 
@@ -53,7 +54,11 @@ public class FoodActivity extends AppCompatActivity {
 
 
         saveButton.setOnClickListener(v -> {
-            // TODO: odradi saveButton akciju
+            Intent intentSave = new Intent(FoodActivity.this, SaveFoodActivity.class);
+            if(!(foodNameTextView.getText().equals(""))){
+                intentSave.putExtra("foodName", foodNameTextView.getText());
+            }
+            startActivity(intentSave);
         });
     }
 
