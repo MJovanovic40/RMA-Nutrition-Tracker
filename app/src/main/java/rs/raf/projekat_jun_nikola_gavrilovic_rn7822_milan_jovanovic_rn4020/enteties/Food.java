@@ -14,11 +14,11 @@ public class Food {
     private Category category;
     private String oblast;
     private String instrukcije;
-    private Bitmap image;
+    private String image;
     private List<String> tagovi;
     private String linkSnimku;
     private List<String> sastojci;
-    private int calories;
+    private float calories;
 
 
     public Food() {
@@ -30,10 +30,22 @@ public class Food {
         this.id = id;
     }
 
+    public Food(String ime, String opis, float calories) {
+        this.ime = ime;
+        this.opis = opis;
+        this.calories = calories;
+    }
+
     /** Konstruktor za Lista Jela */
-    public Food(String ime, Bitmap image) {
+    public Food(String ime, String image) {
         this.ime = ime;
         this.image = image;
+    }
+
+    public Food(String ime, float calories, String image) {
+        this.ime = ime;
+        this.image = image;
+        this.calories = calories;
     }
 
     public String getIme() {
@@ -52,11 +64,11 @@ public class Food {
         this.opis = opis;
     }
 
-    public Bitmap getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
@@ -108,11 +120,11 @@ public class Food {
         this.sastojci = sastojci;
     }
 
-    public int getCalories() {
+    public float getCalories() {
         return calories;
     }
 
-    public void setCalories(int calories) {
+    public void setCalories(float calories) {
         this.calories = calories;
     }
 
