@@ -132,6 +132,7 @@
             android:textAppearance="?android:textAppearanceSmall"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:autoLink="web"
             android:textSize="20dp" />
 
         <TextView

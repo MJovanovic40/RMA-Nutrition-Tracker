@@ -1,5 +1,6 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 public class DetailedMealResponse {
@@ -482,5 +483,65 @@ public class DetailedMealResponse {
 
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
+    }
+
+    public void setIngredient(int index, String ingredient) {
+        try {
+            Field field = getClass().getDeclaredField("strIngredient" + index);
+            field.setAccessible(true);
+            field.set(this, ingredient);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getIngredient(int index) {
+        try {
+            Field field = getClass().getDeclaredField("strIngredient" + index);
+            field.setAccessible(true);
+            return (String) field.get(this);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void setMeasure(int index, String measure) {
+        try {
+            Field field = getClass().getDeclaredField("strMeasure" + index);
+            field.setAccessible(true);
+            field.set(this, measure);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getMeasure(int index) {
+        try {
+            Field field = getClass().getDeclaredField("strMeasure" + index);
+            field.setAccessible(true);
+            return (String) field.get(this);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getSastojci(){
+        StringBuilder builder = new StringBuilder();
+        for(int i = 1; i <= 20; i++){
+            String ingredient = getIngredient(i);
+            if (ingredient == null || ingredient.isEmpty()) {
+                continue;
+            }
+            builder.append(getMeasure(i)).append(" ");
+            builder.append(getIngredient(i)).append(", ");
+        }
+        if(builder.length() > 2){
+            builder.deleteCharAt(builder.length()-1); //Delete space
+            builder.deleteCharAt(builder.length()-1); //Delete ','
+        }
+
+        return builder.toString();
     }
 }
