@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -13,12 +12,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -29,24 +28,40 @@ public class SaveFoodActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    private TextView foodNameTextView;
     private ImageView foodImageView;
-    private DatePicker datePicker;
+    private TextView dateButton;
     private Spinner categorySpinner;
     private Button cameraButton;
     private Button saveButton;
 
     private Bitmap foodImageBitmap;
 
+    private Calendar selectedDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_savefood);
 
+        Intent intent = getIntent();
+
         foodImageView = findViewById(R.id.foodImageView);
-        datePicker = findViewById(R.id.datePicker);
+        dateButton = findViewById(R.id.dateButton);
         categorySpinner = findViewById(R.id.categorySpinner);
         cameraButton = findViewById(R.id.cameraButton);
         saveButton = findViewById(R.id.saveButton);
+        foodNameTextView = findViewById(R.id.foodNameTextView);
+
+        foodNameTextView.setText(intent.getStringExtra("foodName"));
+        selectedDate = Calendar.getInstance(); // Inicijalno postavljamo odabrani datum na današnji datum
+
+        dateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog();
+            }
+        });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +76,33 @@ public class SaveFoodActivity extends AppCompatActivity {
                 saveFood();
             }
         });
+    }
+
+    private void showDatePickerDialog() {
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                selectedDate.set(Calendar.YEAR, year);
+                selectedDate.set(Calendar.MONTH, monthOfYear);
+                selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateDateButtonText();
+            }
+        };
+
+        // Prikazujemo DatePicker dijalog sa odabranim datumom
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                dateSetListener,
+                selectedDate.get(Calendar.YEAR),
+                selectedDate.get(Calendar.MONTH),
+                selectedDate.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+    }
+
+    private void updateDateButtonText() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy.", Locale.getDefault());
+        String formattedDate = sdf.format(selectedDate.getTime());
+        dateButton.setText(formattedDate);
     }
 
     private void dispatchTakePictureIntent() {
@@ -89,7 +131,6 @@ public class SaveFoodActivity extends AppCompatActivity {
             return;
         }
 
-        String selectedDate = formatDate(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
         String selectedCategory = categorySpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(selectedCategory)) {
@@ -102,11 +143,5 @@ public class SaveFoodActivity extends AppCompatActivity {
         Toast.makeText(this, "Food saved successfully", Toast.LENGTH_SHORT).show();
         finish();
     }
-
-    private String formatDate(int year, int month, int day) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, day);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        return sdf.format(calendar.getTime());
-    }
 }
+

@@ -35,6 +35,7 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activ
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponseWrapper;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.softKeyBoard.SoftInputAssist;
 
 public class HomeFragment extends Fragment {
     private RecyclerView categoryRecyclerView;
@@ -42,7 +43,7 @@ public class HomeFragment extends Fragment {
     private ProgressBar categoryProgressBar;
     private EditText search;
 
-
+//    private SoftInputAssist softInputAssist;
     private MealProvider mealProvider;
     private List<Category> categories;
 
@@ -52,6 +53,8 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+//        softInputAssist = new SoftInputAssist(getActivity());
 
         categoryProgressBar = view.findViewById(R.id.categoryProgressBar);
         search = view.findViewById(R.id.searchEditText);
@@ -150,6 +153,21 @@ public class HomeFragment extends Fragment {
         updateAdapter(satisfiedCategories);
     }
 
-
-
+//    @Override
+//    public void onResume() {
+//        softInputAssist.onResume();
+//        super.onResume();
+//    }
+//
+//    @Override
+//    public void onPause() {
+//        softInputAssist.onPause();
+//        super.onPause();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        softInputAssist.onDestroy();
+//        super.onDestroy();
+//    }
 }
