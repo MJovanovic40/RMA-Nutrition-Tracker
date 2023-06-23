@@ -1,16 +1,17 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments;
 
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -29,10 +30,12 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.entet
 
 public class FilterFragment extends Fragment {
 
-    private RadioGroup sortRadioGroup;
-    private RadioButton sortRadioButton;
-    private Spinner dropdownMenu;
-    private EditText searchEditText;
+    private EditText minimumCalsEditText;
+    private Spinner sortCalsSpinner;
+    private EditText maximumCalsEditText;
+    private CheckBox sortCheckBox;
+    private Spinner tagDropdownMenu;
+    private SearchView searchEditText;
     private Spinner filterSpinner;
     private RecyclerView foodRecyclerView;
     private FoodAdapter foodAdapter;
@@ -44,21 +47,24 @@ public class FilterFragment extends Fragment {
     private boolean isLoading = false;
 
     public FilterFragment() {
-        // Required empty public constructor
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
-        sortRadioGroup = view.findViewById(R.id.sortRadioGroup);
-        sortRadioButton = view.findViewById(R.id.sortRadioButton);
-        dropdownMenu = view.findViewById(R.id.dropdown_menu);
+        sortCheckBox = view.findViewById(R.id.sortCheckBox);
         searchEditText = view.findViewById(R.id.searchEditText);
+        tagDropdownMenu = view.findViewById(R.id.dropdown_menu);
         filterSpinner = view.findViewById(R.id.filterSpinner);
         foodRecyclerView = view.findViewById(R.id.itemRecyclerView);
+
+        minimumCalsEditText = view.findViewById(R.id.minCaloriesEditText);
+        sortCalsSpinner = view.findViewById(R.id.filterCalorie);
+        maximumCalsEditText = view.findViewById(R.id.maxCaloriesEditText);
 
         foodList = new ArrayList<>();
         foodList.add(new Food("nesto", "opis", "cals"));
@@ -85,7 +91,7 @@ public class FilterFragment extends Fragment {
                 dropdownOptions
         );
         tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dropdownMenu.setAdapter(tagAdapter);
+        tagDropdownMenu.setAdapter(tagAdapter);
 
         List<String> filterOptions = new ArrayList<>();
         filterOptions.add("Kategorija");
@@ -99,6 +105,19 @@ public class FilterFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterSpinner.setAdapter(filterAdapter);
+
+        List<String> calsOptions = new ArrayList<>();
+        calsOptions.add(">");
+        calsOptions.add(">= =<");
+        calsOptions.add("<");
+
+        ArrayAdapter<String> calsAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                calsOptions
+        );
+        calsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortCalsSpinner.setAdapter(calsAdapter);
 
         foodRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -116,6 +135,23 @@ public class FilterFragment extends Fragment {
                         loadNextPage();
                     }
                 }
+            }
+        });
+
+        sortCalsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = parent.getItemAtPosition(position).toString();
+                if(selectedOption.equals(">= =<")){
+                    maximumCalsEditText.setVisibility(View.VISIBLE);
+                }else{
+                    maximumCalsEditText.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Ova metoda se poziva kada nema selektovane stavke
             }
         });
 

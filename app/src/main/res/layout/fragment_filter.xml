@@ -5,50 +5,85 @@
     android:padding="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RadioGroup
-        android:id="@+id/sortRadioGroup"
-        android:layout_width="180dp"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
+    <CheckBox
+        android:id="@+id/sortCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sortiraj jela abecedno"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <RadioButton
-            android:id="@+id/sortRadioButton"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:text="Sortiraj jela abecedno" />
-
-    </RadioGroup>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/dropdown_menu"
         android:layout_width="0dp"
         android:layout_height="40dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sortRadioGroup"
-        app:layout_constraintTop_toTopOf="@+id/sortRadioGroup" />
+        app:layout_constraintStart_toEndOf="@+id/sortCheckBox"
+        app:layout_constraintTop_toTopOf="@+id/sortCheckBox" />
 
-    <EditText
-        android:id="@+id/searchEditText"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
-        android:hint="Pretraga po nazivu"
-        android:inputType="text"
+        android:iconifiedByDefault="false"
+        android:queryHint="Pretraga po nazivu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sortRadioGroup" />
+        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu" />
 
-    <Spinner
-        android:id="@+id/filterSpinner"
-        android:layout_width="150dp"
+    <LinearLayout
+        android:id="@+id/filterLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="#EEF4ED">
+
+        <EditText
+        android:id="@+id/minCaloriesEditText"
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:hint="Minimalne kalorije"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchEditText"
-        app:layout_constraintWidth_default="wrap" />
+        app:layout_constraintTop_toBottomOf="@+id/filterSpinner" />
+
+        <Spinner
+            android:id="@+id/filterCalorie"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/maxCaloriesEditText"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Maksimalne kalorije"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/minCaloriesEditText"
+            android:visibility="gone"/>
+
+        <Spinner
+            android:id="@+id/filterSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemRecyclerView"
@@ -58,6 +93,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filterSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/filterLinearLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
