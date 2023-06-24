@@ -30,6 +30,8 @@
         <activity android:name=".activities.categoryFood.CategoryFoodActivity"></activity>
         <activity android:name=".activities.foodActivity.FoodActivity"></activity>
         <activity android:name=".activities.activitySaveFood.SaveFoodActivity"></activity>
+        <activity android:name=".activities.activitySavedFoodEdit.SavedFoodEditActivity"></activity>
+        <activity android:name=".activities.activitySavedFoodEdit.EditFoodActivity"></activity>
     </application>
 
 </manifest>

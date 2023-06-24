@@ -5,4 +5,5 @@
     <item android:title="Meal Plan" android:id="@+id/planFragment2" android:icon="@drawable/ic_plan"/>
     <item android:title="Statistic" android:id="@+id/statisticFragment2" android:icon="@drawable/ic_statistic"/>
     <item android:title="Filter" android:id="@+id/filterFragment" android:icon="@drawable/ic_filter" />
+    <item android:title="Menu" android:id="@+id/menuFragment" android:icon="@drawable/ic_menu" />
 </menu>

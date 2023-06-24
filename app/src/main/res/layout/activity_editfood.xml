@@ -1,0 +1,175 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/foodImageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@null"
+            android:paddingBottom="8dp" />
+
+        <EditText
+            android:id="@+id/foodNameEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:hint="Food Name"
+            android:padding="8dp"
+            android:textSize="20dp"
+            android:textColor="@color/black"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kategorija"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/categoryEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textSize="20dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Oblast"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/oblastEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="20dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kalorije"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/caloriesEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="20dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Instrukcije"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/instructionsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="18dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tagovi"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/tagsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="20dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Video"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/videoLinkEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:autoLink="web"
+            android:textSize="20dp"
+            android:background="#EAE9EB"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sastojci"
+            android:padding="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/black"/>
+
+        <EditText
+            android:id="@+id/ingredientsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textSize="20dp"
+            android:background="#EAE9EB"/>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Sacuvaj Izmene"
+            android:padding="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+</ScrollView>

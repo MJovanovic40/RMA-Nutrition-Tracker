@@ -138,7 +138,7 @@ public class SaveFoodActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO implementirati cuvanje jela u bazu podataka
+        // TODO implementirati cuvanje jela u bazu podataka i polsati jelo u Menu za sacuvana jela
 
         Toast.makeText(this, "Food saved successfully", Toast.LENGTH_SHORT).show();
         finish();
