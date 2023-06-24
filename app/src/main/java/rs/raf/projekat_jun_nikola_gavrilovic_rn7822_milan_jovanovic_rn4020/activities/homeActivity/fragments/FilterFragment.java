@@ -20,12 +20,24 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity.FoodActivity;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.calorie.CalorieResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.CalorieProvider;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class FilterFragment extends Fragment {
@@ -45,6 +57,9 @@ public class FilterFragment extends Fragment {
     private int currentPage = 0;
     private boolean isLastPage = false;
     private boolean isLoading = false;
+
+    private MealProvider mealProvider;
+    private CalorieProvider calorieProvider;
 
     public FilterFragment() {
     }
@@ -67,7 +82,64 @@ public class FilterFragment extends Fragment {
         maximumCalsEditText = view.findViewById(R.id.maxCaloriesEditText);
 
         foodList = new ArrayList<>();
-        foodList.add(new Food("nesto", "opis", "cals"));
+
+        mealProvider = new MealProvider();
+        calorieProvider = new CalorieProvider();
+
+        mealProvider.getMealService().fetchMealsByCategory(AppState.getInstance().getCategories().get(0).getNazivKategorije()).enqueue(new Callback<MealResponseWrapper>() {
+            @Override
+            public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                if(response.body() == null || response.body().getMeals() == null){
+                    return;
+                }
+                List<MealResponse> meals = response.body().getMeals();
+
+                for(MealResponse meal : meals) {
+                    Food food = new Food(meal.getStrMeal(), "", meal.getIdMeal());
+                    /*mealProvider.getMealService().fetchMealById(meal.getIdMeal()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                            if(response.body() == null || response.body().getMeals() == null){
+                                return;
+                            }
+                            calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                @Override
+                                public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                    if(response.body() == null){
+                                        return;
+                                    }
+                                    float calories = 0;
+                                    for(CalorieResponse c : response.body()){
+                                        calories += c.getCalories();
+                                    }
+                                    food.setCalories(calories);
+                                    updateAdapter();
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                        }
+                    });*/
+                    food.setCalories(5f);
+                    foodList.add(food);
+                }
+                updateAdapter();
+            }
+
+            @Override
+            public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+
+            }
+        });
+
         foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
             @Override
             public void onFoodClick(Food food) {
@@ -179,5 +251,18 @@ public class FilterFragment extends Fragment {
     private List<Food> fetchDataForPage(int currentPage) {
         // Implement your logic to fetch data for the given page
         return new ArrayList<>(); // Return an empty list for now
+    }
+
+    private void updateAdapter(){
+        foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
+            @Override
+            public void onFoodClick(Food food) {
+                Intent intent = new Intent(getContext(), FoodActivity.class);
+                intent.putExtra("foodName", food.getIme());
+                intent.putExtra("foodId", food.getId());
+                startActivity(intent);
+            }
+        });
+        foodRecyclerView.setAdapter(foodAdapter);
     }
 }

@@ -59,16 +59,20 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
         private TextView nameTextView;
         private TextView descriptionTextView;
+        private TextView caloriesTextView;
 
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            caloriesTextView = itemView.findViewById(R.id.caloriesTextView);
         }
 
         public void bind(Food food, OnFoodClickListener onFoodClickListener) {
             nameTextView.setText(food.getIme());
             descriptionTextView.setText(food.getOpis());
+            String calories = food.getCalories() > 0 ? String.valueOf(food.getCalories()) : "Cals";
+            caloriesTextView.setText(calories);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
