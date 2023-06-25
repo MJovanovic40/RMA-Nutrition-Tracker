@@ -5,21 +5,14 @@
     android:padding="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <CheckBox
-        android:id="@+id/sortCheckBox"
+    <TextView
+        android:id="@+id/searchLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sortiraj jela abecedno"
+        android:text="Pretraga"
+        android:textAppearance="?android:textAppearanceMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Spinner
-        android:id="@+id/dropdown_menu"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sortCheckBox"
-        app:layout_constraintTop_toTopOf="@+id/sortCheckBox" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
@@ -30,17 +23,46 @@
         android:queryHint="Pretraga po nazivu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropdown_menu" />
+        app:layout_constraintTop_toBottomOf="@+id/searchLabel"
+        android:background="#EAE9EB"/>
+
+    <TextView
+        android:id="@+id/dropdownLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tag:"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/filterLinearLayout"
+        app:layout_constraintEnd_toStartOf="@+id/dropdown_menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <Spinner
+        android:id="@+id/dropdown_menu"
+        android:layout_width="170dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/filterLinearLayout"
+        app:layout_constraintEnd_toStartOf="@+id/sortCheckBox"
+        app:layout_constraintStart_toEndOf="@+id/dropdownLabel"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+
+    <CheckBox
+        android:id="@+id/sortCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sortiraj jela abecedno"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <LinearLayout
         android:id="@+id/filterLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#EEF4ED"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="#EEF4ED">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sortCheckBox">
 
         <EditText
             android:id="@+id/minCaloriesEditText"
@@ -69,21 +91,20 @@
             android:layout_marginTop="8dp"
             android:hint="Maksimalne kalorije"
             android:inputType="number"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/minCaloriesEditText"
-            android:visibility="gone"/>
-
-        <Spinner
-            android:id="@+id/filterSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/minCaloriesEditText" />
 
     </LinearLayout>
+    <Spinner
+        android:id="@+id/filterSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filterLinearLayout" />
 
     <Button
         android:id="@+id/filterButton"
@@ -91,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Filter"
-        app:layout_constraintTop_toBottomOf="@+id/filterLinearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/filterSpinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
