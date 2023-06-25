@@ -96,7 +96,7 @@ public class CategoryFoodActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
                 MealResponseWrapper mealResponseWrapper = response.body();
-                if (mealResponseWrapper == null) {
+                if (mealResponseWrapper == null || mealResponseWrapper.getMeals() == null) {
                     return;
                 }
 
