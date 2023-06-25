@@ -102,9 +102,9 @@ public class FilterFragment extends Fragment {
         filterSpinner.setAdapter(filterAdapter);
 
         List<String> calsOptions = new ArrayList<>();
-        calsOptions.add(">");
-        calsOptions.add(">= =<");
         calsOptions.add("<");
+        calsOptions.add(">= =<");
+        calsOptions.add(">");
 
         ArrayAdapter<String> calsAdapter = new ArrayAdapter<>(
                 requireContext(),
@@ -138,17 +138,21 @@ public class FilterFragment extends Fragment {
         filterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(searchEditText.getQuery().toString().isEmpty()){
+                    Toast.makeText(getContext(), "Search query is empty.", Toast.LENGTH_SHORT).show();
+                }
                 Intent intent = new Intent(getContext(), CategoryFoodActivity.class);
+                intent.putExtra("origin", "filter");
                 intent.putExtra("sortAbecedno", sortCheckBox.isChecked());
                 intent.putExtra("tag", tagDropdownMenu.getSelectedItem().toString());
                 if((searchEditText.getQuery().toString()) != null){
                     intent.putExtra("search", searchEditText.getQuery().toString());
                 }
                 if (maximum){
-                    intent.putExtra("minimumCals", minimumCalsEditText.getText());
-                    intent.putExtra("maximumCals", maximumCalsEditText.getText());
+                    intent.putExtra("minimumCals", minimumCalsEditText.getText().toString());
+                    intent.putExtra("maximumCals", maximumCalsEditText.getText().toString());
                 }else{
-                    intent.putExtra("minimumCals", minimumCalsEditText.getText());
+                    intent.putExtra("minimumCals", minimumCalsEditText.getText().toString());
                 }
                 intent.putExtra("filterZnak", sortCalsSpinner.getSelectedItem().toString());
                 intent.putExtra("oblast", filterSpinner.getSelectedItem().toString());

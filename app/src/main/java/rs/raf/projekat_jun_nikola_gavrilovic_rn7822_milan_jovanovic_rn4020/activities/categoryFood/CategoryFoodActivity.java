@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -23,6 +25,10 @@ import retrofit2.Response;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity.FoodActivity;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.calorie.CalorieResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.CalorieProvider;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponseWrapper;
@@ -36,7 +42,9 @@ public class CategoryFoodActivity extends AppCompatActivity {
     private List<Food> foodList;
     private TextView categoryTitleTextView;
 
+
     private MealProvider mealProvider;
+    private CalorieProvider calorieProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +52,12 @@ public class CategoryFoodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_categoryfood);
 
         mealProvider = new MealProvider();
+        calorieProvider = new CalorieProvider();
 
-        String categoryTitle = getIntent().getStringExtra("categoryName");
+        String origin = getIntent().getStringExtra("origin");
 
         categoryTitleTextView = findViewById(R.id.categoryTitleTextView);
-        categoryTitleTextView.setText(categoryTitle);
+        categoryTitleTextView.setText("Meal List");
 
         foodRecyclerView = findViewById(R.id.foodRecyclerView);
         foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -92,30 +101,425 @@ public class CategoryFoodActivity extends AppCompatActivity {
             return false;
         });
 
-        mealProvider.getMealService().fetchMealsByCategory(categoryTitle).enqueue(new Callback<MealResponseWrapper>() {
-            @Override
-            public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
-                MealResponseWrapper mealResponseWrapper = response.body();
-                if (mealResponseWrapper == null || mealResponseWrapper.getMeals() == null) {
+        switch (origin) {
+            case "category":
+                String categoryTitle = getIntent().getStringExtra("categoryName");
+                if(categoryTitle == null){
+                    Toast.makeText(this, "Invalid configuration sent.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mealProvider.getMealService().fetchMealsByCategory(categoryTitle).enqueue(new Callback<MealResponseWrapper>() {
+                    @Override
+                    public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                        MealResponseWrapper mealResponseWrapper = response.body();
+                        if (mealResponseWrapper == null || mealResponseWrapper.getMeals() == null) {
+                            return;
+                        }
+
+                        for (MealResponse c : mealResponseWrapper.getMeals()) {
+                            Food food = new Food(c.getIdMeal(), c.getStrMeal(), c.getStrMealThumb(), 0f);
+
+                            mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                                @Override
+                                public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                                    if(response.body() == null || response.body().getMeals() == null){
+                                        return;
+                                    }
+
+                                    calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                        @Override
+                                        public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                            if(response.body() == null){
+                                                return;
+                                            }
+                                            float calories = 0;
+                                            for(CalorieResponse calorieResponse: response.body()){
+                                                calories += calorieResponse.getCalories();
+                                            }
+                                            food.setCalories(calories);
+                                            updateAdapter(foodList);
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                                }
+                            });
+
+                            foodList.add(food);
+                        }
+                        updateAdapter(foodList);
+                    }
+
+                    @Override
+                    public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+                        System.out.println(t.getMessage());
+                    }
+                });
+
+                break;
+            case "search":
+                String searchType = getIntent().getStringExtra("searchType");
+                String searchQuery = getIntent().getStringExtra("searchQuery");
+                if(searchType == null || searchQuery == null) {
+                    Toast.makeText(this, "Invalid configuration sent.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                for (MealResponse c : mealResponseWrapper.getMeals()) {
-                    Food food = new Food(c.getStrMeal(), "No desc", c.getIdMeal());
-                    foodList.add(food);
+                if(searchType.equals("Meal name")){
+                    mealProvider.getMealService().fetchMealsByName(searchQuery).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                            if(response.body() == null || response.body().getMeals() == null) {
+                                return;
+                            }
+                            for(DetailedMealResponse meal: response.body().getMeals()){
+                                Food food = new Food(meal.getIdMeal(), meal.getStrMeal(), meal.getStrMealThumb(), 0f);
+
+                                calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                    @Override
+                                    public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                        if(response.body() == null){
+                                            return;
+                                        }
+                                        float calories = 0;
+                                        for(CalorieResponse calorieResponse: response.body()){
+                                            calories += calorieResponse.getCalories();
+                                        }
+                                        food.setCalories(calories);
+                                        updateAdapter(foodList);
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                    }
+                                });
+
+                                foodList.add(food);
+                            }
+                            updateAdapter(foodList);
+                        }
+
+                        @Override
+                        public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                        }
+                    });
+                } else if(searchType.equals("Ingredient")) {
+                    mealProvider.getMealService().fetchMealsByIngredient(searchQuery).enqueue(new Callback<MealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                            if(response.body() == null || response.body().getMeals() == null) {
+                                return;
+                            }
+                            for(MealResponse meal: response.body().getMeals()){
+                                Food food = new Food(meal.getIdMeal(), meal.getStrMeal(), meal.getStrMealThumb(), 0f);
+
+                                mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                                        if(response.body() == null || response.body().getMeals() == null){
+                                            return;
+                                        }
+
+                                        calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                            @Override
+                                            public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                                if(response.body() == null){
+                                                    return;
+                                                }
+                                                float calories = 0;
+                                                for(CalorieResponse calorieResponse: response.body()){
+                                                    calories += calorieResponse.getCalories();
+                                                }
+                                                food.setCalories(calories);
+                                                updateAdapter(foodList);
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                                    }
+                                });
+
+                                foodList.add(food);
+                            }
+                            updateAdapter(foodList);
+                        }
+
+                        @Override
+                        public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+
+                        }
+                    });
                 }
                 updateAdapter(foodList);
-            }
+                break;
+            case "filter":
+                String filterType = getIntent().getStringExtra("oblast");
+                String filterQuery = getIntent().getStringExtra("search");
+                String sign = getIntent().getStringExtra("filterZnak");
 
-            @Override
-            public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
-                System.out.println(t.getMessage());
-            }
-        });
+                String minCalStr = getIntent().getStringExtra("minimumCals");
+                float minCal = minCalStr != null ? Float.parseFloat(minCalStr) : 0;
+
+                String maxCalStr = getIntent().getStringExtra("maximumCals");
+                float maxCal = maxCalStr != null ? Float.parseFloat(maxCalStr) : 0;
+
+                boolean sortAbecedno = getIntent().getBooleanExtra("sortAbecedno", false);
+
+                if(filterType == null || filterQuery == null) {
+                    Toast.makeText(this, "Invalid configuration sent", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(filterType.equals("Kategorija")){
+                    mealProvider.getMealService().fetchMealsByCategory(filterQuery).enqueue(new Callback<MealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                            MealResponseWrapper mealResponseWrapper = response.body();
+                            if (mealResponseWrapper == null || mealResponseWrapper.getMeals() == null) {
+                                return;
+                            }
+
+                            for (MealResponse c : mealResponseWrapper.getMeals()) {
+                                Food food = new Food(c.getIdMeal(), c.getStrMeal(), c.getStrMealThumb(), 0f);
+
+                                mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                                        if(response.body() == null || response.body().getMeals() == null){
+                                            return;
+                                        }
+
+                                        calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                            @Override
+                                            public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                                if(response.body() == null){
+                                                    return;
+                                                }
+                                                float calories = 0;
+                                                for(CalorieResponse calorieResponse: response.body()){
+                                                    calories += calorieResponse.getCalories();
+                                                }
+                                                food.setCalories(calories);
+                                                if(!isFilteredByCalories(food, minCal, maxCal, sign)) {
+                                                    foodList.remove(food);
+                                                }
+                                                updateAdapter(foodList);
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                                    }
+                                });
+
+                                foodList.add(food);
+                            }
+                            if(sortAbecedno) {
+                                Collections.sort(foodList, new Comparator<Food>() {
+                                    @Override
+                                    public int compare(Food food, Food t1) {
+                                        return food.getIme().compareTo(t1.getIme());
+                                    }
+                                });
+                            }
+                            updateAdapter(foodList);
+                        }
+
+                        @Override
+                        public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+                            System.out.println(t.getMessage());
+                        }
+                    });
+                } else if(filterType.equals("Sastojci")) {
+                    mealProvider.getMealService().fetchMealsByIngredient(filterQuery).enqueue(new Callback<MealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                            if(response.body() == null || response.body().getMeals() == null) {
+                                return;
+                            }
+                            for(MealResponse meal: response.body().getMeals()){
+                                Food food = new Food(meal.getIdMeal(), meal.getStrMeal(), meal.getStrMealThumb(), 0f);
+
+                                mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                                        if(response.body() == null || response.body().getMeals() == null){
+                                            return;
+                                        }
+
+                                        calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                            @Override
+                                            public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                                if(response.body() == null){
+                                                    return;
+                                                }
+                                                float calories = 0;
+                                                for(CalorieResponse calorieResponse: response.body()){
+                                                    calories += calorieResponse.getCalories();
+                                                }
+                                                food.setCalories(calories);
+                                                if(!isFilteredByCalories(food, minCal, maxCal, sign)){
+                                                    foodList.remove(food);
+                                                }
+                                                updateAdapter(foodList);
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                                    }
+                                });
+
+                                foodList.add(food);
+                            }
+                            if(sortAbecedno) {
+                                Collections.sort(foodList, new Comparator<Food>() {
+                                    @Override
+                                    public int compare(Food food, Food t1) {
+                                        return food.getIme().compareTo(t1.getIme());
+                                    }
+                                });
+                            }
+                            updateAdapter(foodList);
+                        }
+
+                        @Override
+                        public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+
+                        }
+                    });
+                } else if(filterType.equals("Oblasti")) {
+                    mealProvider.getMealService().fetchMealsByArea(filterQuery).enqueue(new Callback<MealResponseWrapper>() {
+                        @Override
+                        public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
+                            MealResponseWrapper mealResponseWrapper = response.body();
+                            if (mealResponseWrapper == null || mealResponseWrapper.getMeals() == null) {
+                                return;
+                            }
+
+                            for (MealResponse c : mealResponseWrapper.getMeals()) {
+                                Food food = new Food(c.getIdMeal(), c.getStrMeal(), c.getStrMealThumb(), 0f);
+
+                                mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
+                                    @Override
+                                    public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                                        if(response.body() == null || response.body().getMeals() == null){
+                                            return;
+                                        }
+
+                                        calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
+                                            @Override
+                                            public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
+                                                if(response.body() == null){
+                                                    return;
+                                                }
+                                                float calories = 0;
+                                                for(CalorieResponse calorieResponse: response.body()){
+                                                    calories += calorieResponse.getCalories();
+                                                }
+                                                food.setCalories(calories);
+                                                if(!isFilteredByCalories(food, minCal, maxCal, sign)) {
+
+                                                    foodList.remove(food);
+                                                }
+                                                updateAdapter(foodList);
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+                                    }
+                                });
+
+                                foodList.add(food);
+                            }
+
+                            if(sortAbecedno) {
+                                Collections.sort(foodList, new Comparator<Food>() {
+                                    @Override
+                                    public int compare(Food food, Food t1) {
+                                        return food.getIme().compareTo(t1.getIme());
+                                    }
+                                });
+                            }
+                            updateAdapter(foodList);
+                        }
+
+                        @Override
+                        public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
+                            System.out.println(t.getMessage());
+                        }
+                    });
+                }
+                break;
+        }
+
     }
 
     private void updateAdapter(List<Food> foodList) {
-        foodAdapter.setItems(foodList);
+        foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
+            @Override
+            public void onFoodClick(Food food) {
+                Intent intent = new Intent(CategoryFoodActivity.this, FoodActivity.class);
+                intent.putExtra("foodName", food.getIme());
+                intent.putExtra("foodId", food.getId());
+                System.out.println(food.getId());
+                startActivity(intent);
+            }
+        });
+        foodRecyclerView.setAdapter(foodAdapter);
+        //foodAdapter.setItems(foodList);
+    }
+
+    private boolean isFilteredByCalories(Food food, float minVal, float maxVal, String sign) {
+        switch(sign) {
+            case ">":
+                return minVal > food.getCalories();
+            case "<":
+                return minVal < food.getCalories();
+            case ">= =<":
+                return food.getCalories() >= minVal && food.getCalories() <= maxVal;
+        }
+        return false;
     }
 
     private void performSearch(String searchQuery) {

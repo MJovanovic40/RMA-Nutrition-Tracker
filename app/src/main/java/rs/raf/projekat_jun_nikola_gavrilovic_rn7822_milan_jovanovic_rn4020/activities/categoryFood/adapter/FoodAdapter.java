@@ -3,10 +3,13 @@ package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.acti
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +64,14 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         private TextView descriptionTextView;
         private TextView caloriesTextView;
 
+        private ImageView foodItemImage;
+
         public FoodViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
             caloriesTextView = itemView.findViewById(R.id.caloriesTextView);
+            foodItemImage = itemView.findViewById(R.id.foodItemImage);
         }
 
         public void bind(Food food, OnFoodClickListener onFoodClickListener) {
@@ -73,6 +79,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             descriptionTextView.setText(food.getOpis());
             String calories = food.getCalories() > 0 ? String.valueOf(food.getCalories()) : "Cals";
             caloriesTextView.setText(calories);
+            Picasso.get().load(food.getImage()).into(foodItemImage);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

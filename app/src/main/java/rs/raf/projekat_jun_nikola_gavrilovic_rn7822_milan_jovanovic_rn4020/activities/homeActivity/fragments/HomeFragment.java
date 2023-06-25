@@ -15,9 +15,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,9 @@ public class HomeFragment extends Fragment {
     private ProgressBar categoryProgressBar;
     private EditText searchEditText;
 
+    private Spinner searchTypeSpinner;
+
+
     private Button searchBtn;
 
 //    private SoftInputAssist softInputAssist;
@@ -58,12 +64,13 @@ public class HomeFragment extends Fragment {
         categoryProgressBar = view.findViewById(R.id.categoryProgressBar);
         searchEditText = view.findViewById(R.id.searchEditText);
         searchBtn = view.findViewById(R.id.searchButton);
+        searchTypeSpinner = view.findViewById(R.id.searchTypeSpinner);
 
         mealProvider = new MealProvider();
 
         categories = new ArrayList<>();
 
-        searchEditText.addTextChangedListener(new TextWatcher() {
+        /*searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -78,12 +85,33 @@ public class HomeFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 performSearch(editable.toString());
             }
-        });
+        });*/
+
+        List<String> searchTypes = new ArrayList<>();
+        searchTypes.add("Meal name");
+        searchTypes.add("Ingredient");
+
+        ArrayAdapter<String> searchTypeAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                searchTypes
+        );
+
+        searchTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        searchTypeSpinner.setAdapter(searchTypeAdapter);
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Logika za search
+                if(searchEditText.getText().toString().isEmpty()){
+                    Toast.makeText(getContext(), "Seach is empty.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(getContext(), CategoryFoodActivity.class);
+                intent.putExtra("origin", "search");
+                intent.putExtra("searchType", searchTypeSpinner.getSelectedItem().toString());
+                intent.putExtra("searchQuery", searchEditText.getText().toString());
+                startActivity(intent);
             }
         });
 
@@ -127,6 +155,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onCategoryClick(Category category) {
                 Intent intent = new Intent(requireContext(), CategoryFoodActivity.class);
+                intent.putExtra("origin", "category");
                 intent.putExtra("categoryName", category.getNazivKategorije());
                 startActivity(intent);
             }

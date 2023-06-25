@@ -12,4 +12,15 @@ public interface MealService {
 
     @GET("/api/json/v1/1/lookup.php")
     Call<DetailedMealResponseWrapper> fetchMealById(@Query("i") String id);
+
+    @GET("/api/json/v1/1/search.php")
+    Call<DetailedMealResponseWrapper> fetchMealsByName(@Query("s") String name);
+
+    @GET("/api/json/v1/1/filter.php")
+    Call<MealResponseWrapper> fetchMealsByIngredient(@Query("i") String ingredient);
+
+    @GET("/api/json/v1/1/filter.php")
+    Call<MealResponseWrapper> fetchMealsByArea(@Query("a") String area);
+
+
 }

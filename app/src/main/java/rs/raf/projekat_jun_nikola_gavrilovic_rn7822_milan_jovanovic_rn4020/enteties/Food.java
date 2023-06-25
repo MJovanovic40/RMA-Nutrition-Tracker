@@ -18,7 +18,7 @@ public class Food {
     private List<String> tagovi;
     private String linkSnimku;
     private List<String> sastojci;
-    private float calories;
+    private float calories = 0;
 
 
     public Food() {
@@ -42,10 +42,11 @@ public class Food {
         this.image = image;
     }
 
-    public Food(String ime, float calories, String image) {
+    public Food(String id, String ime, String image, float calories) {
         this.ime = ime;
         this.image = image;
         this.calories = calories;
+        this.id = id;
     }
 
     public String getIme() {
