@@ -32,6 +32,8 @@
         <activity android:name=".activities.activitySaveFood.SaveFoodActivity"></activity>
         <activity android:name=".activities.activitySavedFoodEdit.SavedFoodEditActivity"></activity>
         <activity android:name=".activities.activitySavedFoodEdit.EditFoodActivity"></activity>
+        <activity android:name=".activities.activityProfile.StatisticsActivity"></activity>
+        <activity android:name=".activities.activityProfile.EditDataActivity"></activity>
     </application>
 
 </manifest>

@@ -2,7 +2,6 @@ package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.acti
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,12 +15,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +33,14 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activ
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponse;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.category.CategoryResponseWrapper;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.softKeyBoard.SoftInputAssist;
 
 public class HomeFragment extends Fragment {
     private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
     private ProgressBar categoryProgressBar;
-    private EditText search;
+    private EditText searchEditText;
+
+    private Button searchBtn;
 
 //    private SoftInputAssist softInputAssist;
     private MealProvider mealProvider;
@@ -58,13 +56,14 @@ public class HomeFragment extends Fragment {
 //        softInputAssist = new SoftInputAssist(getActivity());
 
         categoryProgressBar = view.findViewById(R.id.categoryProgressBar);
-        search = view.findViewById(R.id.searchEditText);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchBtn = view.findViewById(R.id.searchButton);
 
         mealProvider = new MealProvider();
 
         categories = new ArrayList<>();
 
-        search.addTextChangedListener(new TextWatcher() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -78,6 +77,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 performSearch(editable.toString());
+            }
+        });
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO Logika za search
             }
         });
 

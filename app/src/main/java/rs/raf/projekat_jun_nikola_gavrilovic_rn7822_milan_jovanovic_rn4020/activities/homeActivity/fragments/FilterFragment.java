@@ -9,26 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.CategoryFoodActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity.FoodActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.calorie.CalorieResponse;
@@ -49,18 +44,12 @@ public class FilterFragment extends Fragment {
     private Spinner tagDropdownMenu;
     private SearchView searchEditText;
     private Spinner filterSpinner;
-    private RecyclerView foodRecyclerView;
-    private FoodAdapter foodAdapter;
-    private List<Food> foodList;
-
-    private static final int PAGE_SIZE = 20;
-    private int currentPage = 0;
-    private boolean isLastPage = false;
-    private boolean isLoading = false;
+    private Button filterBtn;
 
     private MealProvider mealProvider;
     private CalorieProvider calorieProvider;
 
+    boolean maximum = false;
     public FilterFragment() {
     }
 
@@ -72,84 +61,18 @@ public class FilterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
         sortCheckBox = view.findViewById(R.id.sortCheckBox);
-        searchEditText = view.findViewById(R.id.searchEditText);
+        searchEditText = view.findViewById(R.id.searchView);
         tagDropdownMenu = view.findViewById(R.id.dropdown_menu);
         filterSpinner = view.findViewById(R.id.filterSpinner);
-        foodRecyclerView = view.findViewById(R.id.itemRecyclerView);
 
         minimumCalsEditText = view.findViewById(R.id.minCaloriesEditText);
         sortCalsSpinner = view.findViewById(R.id.filterCalorie);
         maximumCalsEditText = view.findViewById(R.id.maxCaloriesEditText);
 
-        foodList = new ArrayList<>();
+        filterBtn = view.findViewById(R.id.filterButton);
 
         mealProvider = new MealProvider();
         calorieProvider = new CalorieProvider();
-
-        mealProvider.getMealService().fetchMealsByCategory(AppState.getInstance().getCategories().get(0).getNazivKategorije()).enqueue(new Callback<MealResponseWrapper>() {
-            @Override
-            public void onResponse(Call<MealResponseWrapper> call, Response<MealResponseWrapper> response) {
-                if(response.body() == null || response.body().getMeals() == null){
-                    return;
-                }
-                List<MealResponse> meals = response.body().getMeals();
-
-                for(MealResponse meal : meals) {
-                    Food food = new Food(meal.getStrMeal(), "", meal.getIdMeal());
-                    /*mealProvider.getMealService().fetchMealById(meal.getIdMeal()).enqueue(new Callback<DetailedMealResponseWrapper>() {
-                        @Override
-                        public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
-                            if(response.body() == null || response.body().getMeals() == null){
-                                return;
-                            }
-                            calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
-                                @Override
-                                public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
-                                    if(response.body() == null){
-                                        return;
-                                    }
-                                    float calories = 0;
-                                    for(CalorieResponse c : response.body()){
-                                        calories += c.getCalories();
-                                    }
-                                    food.setCalories(calories);
-                                    updateAdapter();
-                                }
-
-                                @Override
-                                public void onFailure(Call<List<CalorieResponse>> call, Throwable t) {
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
-
-                        }
-                    });*/
-                    food.setCalories(5f);
-                    foodList.add(food);
-                }
-                updateAdapter();
-            }
-
-            @Override
-            public void onFailure(Call<MealResponseWrapper> call, Throwable t) {
-
-            }
-        });
-
-        foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
-            @Override
-            public void onFoodClick(Food food) {
-                Intent intent = new Intent(getContext(), FoodActivity.class);
-                intent.putExtra("foodName", food.getIme());
-                startActivity(intent);
-            }
-        });
-        foodRecyclerView.setAdapter(foodAdapter);
-        foodRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         List<String> dropdownOptions = new ArrayList<>();
         dropdownOptions.add("Option 1");
@@ -191,33 +114,17 @@ public class FilterFragment extends Fragment {
         calsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortCalsSpinner.setAdapter(calsAdapter);
 
-        foodRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                int visibleItemCount = layoutManager.getChildCount();
-                int totalItemCount = layoutManager.getItemCount();
-                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-
-                if (!isLoading && !isLastPage) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0 && totalItemCount >= PAGE_SIZE) {
-                        currentPage++;
-                        loadNextPage();
-                    }
-                }
-            }
-        });
 
         sortCalsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedOption = parent.getItemAtPosition(position).toString();
-                if(selectedOption.equals(">= =<")){
+                if (selectedOption.equals(">= =<")) {
                     maximumCalsEditText.setVisibility(View.VISIBLE);
-                }else{
+                    maximum = true;
+                } else {
                     maximumCalsEditText.setVisibility(View.GONE);
+                    maximum = false;
                 }
             }
 
@@ -227,42 +134,29 @@ public class FilterFragment extends Fragment {
             }
         });
 
-        return view;
-    }
 
-    private void loadNextPage() {
-        isLoading = true;
-        List<Food> nextPageItems = fetchDataForPage(currentPage);
-
-        new Handler().postDelayed(new Runnable() {
+        filterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                isLoading = false;
-
-                if (nextPageItems.size() < PAGE_SIZE) {
-                    isLastPage = true;
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CategoryFoodActivity.class);
+                intent.putExtra("sortAbecedno", sortCheckBox.isChecked());
+                intent.putExtra("tag", tagDropdownMenu.getSelectedItem().toString());
+                if((searchEditText.getQuery().toString()) != null){
+                    intent.putExtra("search", searchEditText.getQuery().toString());
                 }
-
-                foodAdapter.setItems(nextPageItems);
-            }
-        }, 1500);
-    }
-
-    private List<Food> fetchDataForPage(int currentPage) {
-        // Implement your logic to fetch data for the given page
-        return new ArrayList<>(); // Return an empty list for now
-    }
-
-    private void updateAdapter(){
-        foodAdapter = new FoodAdapter(foodList, new FoodAdapter.OnFoodClickListener() {
-            @Override
-            public void onFoodClick(Food food) {
-                Intent intent = new Intent(getContext(), FoodActivity.class);
-                intent.putExtra("foodName", food.getIme());
-                intent.putExtra("foodId", food.getId());
+                if (maximum){
+                    intent.putExtra("minimumCals", minimumCalsEditText.getText());
+                    intent.putExtra("maximumCals", maximumCalsEditText.getText());
+                }else{
+                    intent.putExtra("minimumCals", minimumCalsEditText.getText());
+                }
+                intent.putExtra("filterZnak", sortCalsSpinner.getSelectedItem().toString());
+                intent.putExtra("oblast", filterSpinner.getSelectedItem().toString());
                 startActivity(intent);
+
             }
         });
-        foodRecyclerView.setAdapter(foodAdapter);
+
+        return view;
     }
 }
