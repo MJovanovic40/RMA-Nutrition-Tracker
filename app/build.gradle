@@ -69,5 +69,9 @@ dependencies {
     //Picasso (Image library)
     implementation 'com.squareup.picasso:picasso:2.8'
 
+    //Camera and file picker library
     implementation 'com.github.jrvansuita:PickImage:+';
+
+    //Graph library
+    implementation 'com.jjoe64:graphview:4.2.2';
 }
