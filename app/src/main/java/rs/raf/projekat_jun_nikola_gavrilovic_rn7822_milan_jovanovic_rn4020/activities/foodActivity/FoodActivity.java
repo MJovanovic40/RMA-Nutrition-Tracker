@@ -46,6 +46,8 @@ public class FoodActivity extends AppCompatActivity {
 
     private String imageLink;
 
+    private float calorieValue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +110,7 @@ public class FoodActivity extends AppCompatActivity {
                         }
                         String caloriesString = String.valueOf(calories) + " Calories";
                         caloriesTextView.setText(caloriesString);
+                        calorieValue = calories;
                     }
 
                     @Override
@@ -132,6 +135,7 @@ public class FoodActivity extends AppCompatActivity {
                 intentSave.putExtra("foodName", foodNameTextView.getText());
                 intentSave.putExtra("image", imageLink);
                 intentSave.putExtra("foodId", getIntent().getStringExtra("foodId"));
+                intentSave.putExtra("calories", calorieValue);
             }
             startActivity(intentSave);
         });

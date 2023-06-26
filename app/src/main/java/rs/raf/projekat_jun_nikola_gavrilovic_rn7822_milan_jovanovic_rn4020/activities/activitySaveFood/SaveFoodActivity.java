@@ -37,7 +37,15 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.MealEntity;
 
 public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
 
@@ -59,6 +67,11 @@ public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
 
     private ChooseImageDialog chooseImageDialog;
 
+    private MealProvider mealProvider;
+
+    private String mealImage;
+    private DetailedMealResponse meal = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,10 +89,29 @@ public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
 
         chooseImageDialog = new ChooseImageDialog();
 
+        mealProvider = new MealProvider();
+
         foodNameTextView.setText(intent.getStringExtra("foodName"));
         selectedDate = Calendar.getInstance(); // Inicijalno postavljamo odabrani datum na današnji datum
 
         Picasso.get().load(getIntent().getStringExtra("image")).into(foodImageView);
+        mealImage = getIntent().getStringExtra("image");
+
+        mealProvider.getMealService().fetchMealById(intent.getStringExtra("foodId")).enqueue(new Callback<DetailedMealResponseWrapper>() {
+            @Override
+            public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
+                if(response == null || response.body().getMeals() == null){
+                    return;
+                }
+                meal = response.body().getMeals().get(0);
+            }
+
+            @Override
+            public void onFailure(Call<DetailedMealResponseWrapper> call, Throwable t) {
+
+            }
+        });
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             selectedDate.set(Calendar.YEAR, LocalDate.now().getYear());
@@ -113,23 +145,10 @@ public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
             @Override
             public void onClick(View view) {
                 //Open camera
-                //chooseImageDialog.show(getSupportFragmentManager(), "choose file");
-
                 PickImageDialog.build(new PickSetup()).show(SaveFoodActivity.this);
             }
         });
 
-        /*cameraButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                if (checkCameraPermission()) {
-                    dispatchTakePictureIntent();
-                } else {
-                    requestCameraPermission();
-                }
-            }
-        });*/
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,41 +185,14 @@ public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
         dateButton.setText(formattedDate);
     }
 
-    private boolean checkCameraPermission() {
-        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.CAMERA},
-                CAMERA_PERMISSION_REQUEST_CODE
-        );
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            Bundle extras = data.getExtras();
-            if (extras != null && extras.containsKey("data")) {
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                foodImageView.setImageBitmap(imageBitmap);
-                foodImageBitmap = imageBitmap;
-            }
-        }
-    }
 
     private void saveFood() {
-        if (foodImageBitmap == null) {
+        /*if (foodImageBitmap == null) {
+            Toast.makeText(this, "Take a photo of the food", Toast.LENGTH_SHORT).show();
+            return;
+        }*/
+
+        if(mealImage == null){
             Toast.makeText(this, "Take a photo of the food", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -213,31 +205,25 @@ public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
         }
 
         // TODO implementirati cuvanje jela u bazu podataka i polsati jelo u Menu za sacuvana jela
+        if(meal == null){
+            Toast.makeText(this, "Meal not ready.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        MealEntity mealEntity = new MealEntity(meal, mealImage, selectedDate.getTime() ,selectedCategory, getIntent().getFloatExtra("calories", 0));
+
+        AppState.getInstance().getDb().mealDao().add(mealEntity);
 
         Toast.makeText(this, "Food saved successfully", Toast.LENGTH_SHORT).show();
         finish();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                dispatchTakePictureIntent();
-            } else {
-                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
     public void onPickResult(PickResult r) {
         if (r.getError() == null) {
-            System.out.println("Url: " + r.getUri());
             Picasso.get().load(r.getUri()).into(foodImageView);
+            mealImage = r.getUri().toString();
         } else {
-            //Handle possible errors
-            //TODO: do what you have to do with r.getError();
             Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
         }
     }

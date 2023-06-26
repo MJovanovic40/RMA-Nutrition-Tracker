@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activitySavedFoodEdit.SavedFoodEditActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.MealEntity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickListener {
@@ -44,7 +46,14 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
 
         // Initialize the RecyclerView
         recyclerViewMenu.setLayoutManager(new LinearLayoutManager(requireContext()));
-        foodList = getMenuItems();
+        //foodList = getMenuItems();
+        foodList = new ArrayList<>();
+
+        List<MealEntity> savedMenu = AppState.getInstance().getDb().mealDao().findAll();
+        for(MealEntity meal: savedMenu) {
+            foodList.add(new Food(String.valueOf(meal.getId()), meal.getStrMeal(), meal.getStrMealThumb(), meal.getCalories()));
+        }
+
         foodAdapter = new FoodAdapter(foodList, this);
         recyclerViewMenu.setAdapter(foodAdapter);
 
@@ -55,6 +64,7 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
     public void onFoodClick(Food food) {
         Intent intent = new Intent(requireContext(), SavedFoodEditActivity.class);
         intent.putExtra("menuItem", food.getIme());
+        intent.putExtra("menuFoodId", food.getId());
         startActivity(intent);
     }
 

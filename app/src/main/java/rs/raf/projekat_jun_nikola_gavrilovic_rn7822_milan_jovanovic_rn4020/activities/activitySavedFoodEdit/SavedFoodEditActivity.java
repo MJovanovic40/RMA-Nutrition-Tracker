@@ -10,7 +10,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.squareup.picasso.Picasso;
+
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.MealEntity;
 
 public class SavedFoodEditActivity extends AppCompatActivity {
 
@@ -43,11 +47,27 @@ public class SavedFoodEditActivity extends AppCompatActivity {
         editButton = findViewById(R.id.editButton);
         deleteButton = findViewById(R.id.deleteButton);
 
+        MealEntity meal = AppState.getInstance().getDb().mealDao().find(Integer.parseInt(getIntent().getStringExtra("menuFoodId")));
+
+        Picasso.get().load(meal.getStrMealThumb()).into(foodImageView);
+        foodNameTextView.setText(meal.getStrMeal());
+        categoryTextView.setText(meal.getMealCategory());
+        oblastTextView.setText(meal.getStrArea());
+
+        String strCalories = meal.getCalories() + " Calories";
+        caloriesTextView.setText(strCalories);
+
+        instructionsTextView.setText(meal.getStrInstructions());
+        tagsTextView.setText(meal.getStrTags());
+        videoLinkTextView.setText(meal.getStrYoutube());
+        ingredientsTextView.setText(meal.getSastojci());
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SavedFoodEditActivity.this, EditFoodActivity.class);
                 intent.putExtra("foodName", foodNameTextView.getText());
+                intent.putExtra("menuFoodId", getIntent().getStringExtra("menuFoodId"));
                 startActivity(intent);
             }
         });
@@ -55,7 +75,9 @@ public class SavedFoodEditActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Ukloniti item iz baze
+
+                AppState.getInstance().getDb().mealDao().delete(meal);
+
                 onBackPressed();
                 Toast.makeText(SavedFoodEditActivity.this, "Hrana obrisana iz meni-a!", Toast.LENGTH_SHORT).show();
             }
