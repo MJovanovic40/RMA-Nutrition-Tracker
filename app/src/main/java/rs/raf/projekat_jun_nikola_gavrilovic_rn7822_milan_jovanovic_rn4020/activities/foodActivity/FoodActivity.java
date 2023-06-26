@@ -44,6 +44,8 @@ public class FoodActivity extends AppCompatActivity {
     private Button saveButton;
     private TextView caloriesTextView;
 
+    private String imageLink;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +90,8 @@ public class FoodActivity extends AppCompatActivity {
                 videoLinkTextView.setMovementMethod(LinkMovementMethod.getInstance());
                 ingredientsTextView.setText(meal.getSastojci().replaceAll(", ", ",\n"));
 
+                imageLink = meal.getStrMealThumb();
+
                 calorieProvider.getCalorieService().fetchCaloriesForMeal(meal.getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
                     @Override
                     public void onResponse(Call<List<CalorieResponse>> call, Response<List<CalorieResponse>> response) {
@@ -124,8 +128,10 @@ public class FoodActivity extends AppCompatActivity {
 
         saveButton.setOnClickListener(v -> {
             Intent intentSave = new Intent(FoodActivity.this, SaveFoodActivity.class);
-            if(!(foodNameTextView.getText().equals(""))){
+            if(!(foodNameTextView.getText().equals("")) && imageLink != null){
                 intentSave.putExtra("foodName", foodNameTextView.getText());
+                intentSave.putExtra("image", imageLink);
+                intentSave.putExtra("foodId", getIntent().getStringExtra("foodId"));
             }
             startActivity(intentSave);
         });

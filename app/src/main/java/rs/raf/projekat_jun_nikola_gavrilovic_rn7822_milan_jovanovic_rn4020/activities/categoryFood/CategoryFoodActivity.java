@@ -14,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -276,10 +278,22 @@ public class CategoryFoodActivity extends AppCompatActivity {
                 String sign = getIntent().getStringExtra("filterZnak");
 
                 String minCalStr = getIntent().getStringExtra("minimumCals");
-                float minCal = minCalStr != null ? Float.parseFloat(minCalStr) : 0;
+                float minCal = minCalStr != null && !minCalStr.isEmpty() ? Float.parseFloat(minCalStr) : 0;
 
                 String maxCalStr = getIntent().getStringExtra("maximumCals");
-                float maxCal = maxCalStr != null ? Float.parseFloat(maxCalStr) : 0;
+                float maxCal = maxCalStr != null && !minCalStr.isEmpty() ? Float.parseFloat(maxCalStr) : 0;
+
+                String tagsStr = getIntent().getStringExtra("tag");
+
+                List<String> tags = new ArrayList<>();
+
+                if(!tagsStr.isEmpty()){
+                    String[] components = tagsStr.split(",");
+
+                    for(String s: components) {
+                        tags.add(s);
+                    }
+                }
 
                 boolean sortAbecedno = getIntent().getBooleanExtra("sortAbecedno", false);
 
@@ -305,6 +319,23 @@ public class CategoryFoodActivity extends AppCompatActivity {
                                     public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
                                         if(response.body() == null || response.body().getMeals() == null){
                                             return;
+                                        }
+
+                                        if(!tags.isEmpty()) {
+                                            if (response.body().getMeals().get(0).getStrTags() != null) {
+                                                List<String> mealTags = new ArrayList<>(Arrays.asList(response.body().getMeals().get(0).getStrTags().split(",")));
+                                                for (String s : tags) {
+                                                    if (mealTags.stream().noneMatch(s::equalsIgnoreCase)) {
+                                                        foodList.remove(food);
+                                                        updateAdapter(foodList);
+                                                        return;
+                                                    }
+                                                }
+                                            } else {
+                                                foodList.remove(food);
+                                                updateAdapter(foodList);
+                                                return;
+                                            }
                                         }
 
                                         calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
@@ -364,12 +395,28 @@ public class CategoryFoodActivity extends AppCompatActivity {
                             }
                             for(MealResponse meal: response.body().getMeals()){
                                 Food food = new Food(meal.getIdMeal(), meal.getStrMeal(), meal.getStrMealThumb(), 0f);
-
                                 mealProvider.getMealService().fetchMealById(food.getId()).enqueue(new Callback<DetailedMealResponseWrapper>() {
                                     @Override
                                     public void onResponse(Call<DetailedMealResponseWrapper> call, Response<DetailedMealResponseWrapper> response) {
                                         if(response.body() == null || response.body().getMeals() == null){
                                             return;
+                                        }
+
+                                        if(!tags.isEmpty()) {
+                                            if (response.body().getMeals().get(0).getStrTags() != null) {
+                                                List<String> mealTags = new ArrayList<>(Arrays.asList(response.body().getMeals().get(0).getStrTags().split(",")));
+                                                for (String s : tags) {
+                                                    if (mealTags.stream().noneMatch(s::equalsIgnoreCase)) {
+                                                        foodList.remove(food);
+                                                        updateAdapter(foodList);
+                                                        return;
+                                                    }
+                                                }
+                                            } else {
+                                                foodList.remove(food);
+                                                updateAdapter(foodList);
+                                                return;
+                                            }
                                         }
 
                                         calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
@@ -438,6 +485,33 @@ public class CategoryFoodActivity extends AppCompatActivity {
                                         if(response.body() == null || response.body().getMeals() == null){
                                             return;
                                         }
+
+                                        if(!tags.isEmpty()) {
+                                            if (response.body().getMeals().get(0).getStrTags() != null) {
+                                                List<String> mealTags = new ArrayList<>(Arrays.asList(response.body().getMeals().get(0).getStrTags().split(",")));
+                                                for (String s : tags) {
+                                                    if (mealTags.stream().noneMatch(s::equalsIgnoreCase)) {
+                                                        foodList.remove(food);
+                                                        updateAdapter(foodList);
+                                                        return;
+                                                    }
+                                                }
+                                            } else {
+                                                foodList.remove(food);
+                                                updateAdapter(foodList);
+                                                return;
+                                            }
+                                        }
+                                        /*if(response.body().getMeals().get(0).getStrTags() != null && tags.size() > 0){
+                                            List<String> mealTags = new ArrayList<>(Arrays.asList(response.body().getMeals().get(0).getStrTags().split(",")));
+                                            for(String s: tags) {
+                                                if(!mealTags.contains(s)){
+                                                    return;
+                                                }
+                                            }
+                                        } else if(tags.size() <= 0){
+                                            return;
+                                        }*/
 
                                         calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
                                             @Override
