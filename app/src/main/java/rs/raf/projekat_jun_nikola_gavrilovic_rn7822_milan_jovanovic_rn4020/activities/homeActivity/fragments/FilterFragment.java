@@ -3,7 +3,6 @@ package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.acti
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
@@ -24,16 +22,8 @@ import java.util.List;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.CategoryFoodActivity;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.categoryFood.adapter.FoodAdapter;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.foodActivity.FoodActivity;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.calorie.CalorieResponse;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponse;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.DetailedMealResponseWrapper;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponse;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.models.meal.MealResponseWrapper;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.CalorieProvider;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.enteties.Food;
 
 public class FilterFragment extends Fragment {
 
@@ -41,7 +31,7 @@ public class FilterFragment extends Fragment {
     private Spinner sortCalsSpinner;
     private EditText maximumCalsEditText;
     private CheckBox sortCheckBox;
-    private Spinner tagDropdownMenu;
+    private EditText tagEditText;
     private SearchView searchEditText;
     private Spinner filterSpinner;
     private Button filterBtn;
@@ -62,7 +52,7 @@ public class FilterFragment extends Fragment {
 
         sortCheckBox = view.findViewById(R.id.sortCheckBox);
         searchEditText = view.findViewById(R.id.searchView);
-        tagDropdownMenu = view.findViewById(R.id.dropdown_menu);
+        tagEditText = view.findViewById(R.id.tagEditText);
         filterSpinner = view.findViewById(R.id.filterSpinner);
 
         minimumCalsEditText = view.findViewById(R.id.minCaloriesEditText);
@@ -73,20 +63,6 @@ public class FilterFragment extends Fragment {
 
         mealProvider = new MealProvider();
         calorieProvider = new CalorieProvider();
-
-        List<String> dropdownOptions = new ArrayList<>();
-        dropdownOptions.add("Option 1");
-        dropdownOptions.add("Option 2");
-        dropdownOptions.add("Option 3");
-        /** OVDE UBACITI TAGOVE  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-
-        ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                dropdownOptions
-        );
-        tagAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tagDropdownMenu.setAdapter(tagAdapter);
 
         List<String> filterOptions = new ArrayList<>();
         filterOptions.add("Kategorija");
@@ -144,7 +120,7 @@ public class FilterFragment extends Fragment {
                 Intent intent = new Intent(getContext(), CategoryFoodActivity.class);
                 intent.putExtra("origin", "filter");
                 intent.putExtra("sortAbecedno", sortCheckBox.isChecked());
-                intent.putExtra("tag", tagDropdownMenu.getSelectedItem().toString());
+                intent.putExtra("tag", tagEditText.getText().toString());
                 if((searchEditText.getQuery().toString()) != null){
                     intent.putExtra("search", searchEditText.getQuery().toString());
                 }
