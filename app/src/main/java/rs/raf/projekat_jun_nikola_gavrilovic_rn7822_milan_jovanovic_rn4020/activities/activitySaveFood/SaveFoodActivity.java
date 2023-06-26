@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
@@ -18,8 +20,14 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.squareup.picasso.Picasso;
+
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
@@ -32,7 +40,7 @@ public class SaveFoodActivity extends AppCompatActivity {
     private ImageView foodImageView;
     private TextView dateButton;
     private Spinner categorySpinner;
-    private Button cameraButton;
+    //private Button cameraButton;
     private Button saveButton;
 
     private Bitmap foodImageBitmap;
@@ -49,12 +57,35 @@ public class SaveFoodActivity extends AppCompatActivity {
         foodImageView = findViewById(R.id.foodImageView);
         dateButton = findViewById(R.id.dateButton);
         categorySpinner = findViewById(R.id.categorySpinner);
-        cameraButton = findViewById(R.id.cameraButton);
+        //cameraButton = findViewById(R.id.cameraButton);
         saveButton = findViewById(R.id.saveButton);
         foodNameTextView = findViewById(R.id.foodNameTextView);
 
         foodNameTextView.setText(intent.getStringExtra("foodName"));
         selectedDate = Calendar.getInstance(); // Inicijalno postavljamo odabrani datum na današnji datum
+
+        Picasso.get().load(getIntent().getStringExtra("image")).into(foodImageView);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            selectedDate.set(Calendar.YEAR, LocalDate.now().getYear());
+            selectedDate.set(Calendar.MONTH, LocalDate.now().getMonthValue() - 1);
+            selectedDate.set(Calendar.DAY_OF_MONTH, LocalDate.now().getDayOfMonth());
+            updateDateButtonText();
+        }
+
+        List<String> spinnerAdapterList = new ArrayList<>();
+        spinnerAdapterList.add("Breakfast");
+        spinnerAdapterList.add("Lunch");
+        spinnerAdapterList.add("Dinner");
+        spinnerAdapterList.add("Snack");
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                spinnerAdapterList
+        );
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(categoryAdapter);
 
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,12 +94,19 @@ public class SaveFoodActivity extends AppCompatActivity {
             }
         });
 
-        cameraButton.setOnClickListener(new View.OnClickListener() {
+        foodImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Open camera
+            }
+        });
+
+        /*cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dispatchTakePictureIntent();
             }
-        });
+        });*/
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
