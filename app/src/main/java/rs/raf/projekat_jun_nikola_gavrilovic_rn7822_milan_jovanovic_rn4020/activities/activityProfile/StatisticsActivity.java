@@ -132,13 +132,120 @@ public class StatisticsActivity extends AppCompatActivity {
 //    }
 
     private GraphView graphView;
+    private GraphView graphViewCalories;
+
+    private RadioGroup radioGroup;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
         graphView = findViewById(R.id.idGraphView);
+        graphViewCalories = findViewById(R.id.idGraphViewCalories);
+        radioGroup = findViewById(R.id.statisticsRadioGroup);
 
+        setupGraphViewMealNumber();
+        setupGraphViewCalories();
+
+        radioGroup.getCheckedRadioButtonId();
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == R.id.mealCountRadioButton) {
+                    graphViewCalories.setVisibility(View.GONE);
+                    graphView.setVisibility(View.VISIBLE);
+                } else {
+                    graphViewCalories.setVisibility(View.VISIBLE);
+                    graphView.setVisibility(View.GONE);
+                }
+            }
+        });
+
+    }
+
+    private void setupGraphViewCalories() {Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7); // Subtract 7 days from the current date
+
+        Date startDate = calendar.getTime();
+
+        List<MealEntity> meals = AppState.getInstance().getDb().mealDao().getMealsWithinLast7Days(startDate);
+
+        Map<Integer, Float> o = new HashMap<>();
+
+        Calendar calendarSave = Calendar.getInstance();
+
+        for(int i = 0; i < meals.size(); i++) {
+            MealEntity meal = meals.get(i);
+            calendarSave.setTime(meal.getPreparationDate());
+            float c = 0;
+
+            if(o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null){
+                c = o.get(calendarSave.get(Calendar.DAY_OF_WEEK));
+            }
+            o.put(calendarSave.get(Calendar.DAY_OF_WEEK), meal.getCalories());
+        }
+
+        DataPoint[] dataPoints = new DataPoint[7];
+
+        for(int i = 0; i < 7; i++) {
+            dataPoints[i] = new DataPoint(i, 0);
+        }
+
+        for(Integer date : o.keySet()) {
+            dataPoints[date] = new DataPoint(date, o.get(date));
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
+
+        // after adding data to our line graph series.
+        // on below line we are setting
+        // title for our graph view.
+        graphViewCalories.setTitle("Statistika broja obroka");
+
+        // on below line we are setting
+        // text color to our graph view.
+        graphViewCalories.setTitleColor(R.color.black);
+
+        // on below line we are setting
+        // our title text size.
+        graphViewCalories.setTitleTextSize(72);
+
+        // on below line we are adding
+        // data series to our graph view.
+        graphViewCalories.addSeries(series);
+
+        graphViewCalories.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    switch((int) value) {
+                        case 1:
+                            return "Sunday";
+                        case 2:
+                            return "Monday";
+                        case 3:
+                            return "Tuesday";
+                        case 4:
+                            return "Wednesday";
+                        case 5:
+                            return "Thursday";
+                        case 6:
+                            return "Friday";
+                        case 7:
+                            return "Saturday";
+                    }
+                } else {
+                    // Use the default formatting for y-values
+                    return super.formatLabel(value, isValueX);
+                }
+                return "";
+            }
+        });
+    }
+
+
+    private void setupGraphViewMealNumber(){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -7); // Subtract 7 days from the current date
 
@@ -146,14 +253,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         List<MealEntity> meals = AppState.getInstance().getDb().mealDao().getMealsWithinLast7Days(startDate);
 
-
         Map<Integer, Integer> o = new HashMap<>();
 
         Calendar calendarSave = Calendar.getInstance();
 
         for(int i = 0; i < meals.size(); i++) {
             MealEntity meal = meals.get(i);
-            calendarSave.setTime(meal.getDateSaved());
+            calendarSave.setTime(meal.getPreparationDate());
             int c = 0;
 
             if(o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null){
@@ -178,15 +284,15 @@ public class StatisticsActivity extends AppCompatActivity {
         // after adding data to our line graph series.
         // on below line we are setting
         // title for our graph view.
-        graphView.setTitle("Statistika");
+        graphView.setTitle("Statistika broja obroka");
 
         // on below line we are setting
         // text color to our graph view.
-        graphView.setTitleColor(R.color.purple_200);
+        graphView.setTitleColor(R.color.black);
 
         // on below line we are setting
         // our title text size.
-        graphView.setTitleTextSize(18);
+        graphView.setTitleTextSize(72);
 
         // on below line we are adding
         // data series to our graph view.
@@ -219,6 +325,5 @@ public class StatisticsActivity extends AppCompatActivity {
                 return "";
             }
         });
-
     }
 }

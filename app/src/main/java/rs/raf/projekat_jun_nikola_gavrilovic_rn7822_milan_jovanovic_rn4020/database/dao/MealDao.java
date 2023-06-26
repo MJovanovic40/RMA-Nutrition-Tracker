@@ -19,7 +19,7 @@ public interface MealDao {
     @Query("SELECT * FROM MealEntity WHERE id = :id")
     MealEntity find(int id);
 
-    @Query("SELECT * FROM MealEntity WHERE date_saved >= :startDate order by date_saved asc")
+    @Query("SELECT * FROM MealEntity WHERE preparation_date >= :startDate order by preparation_date asc")
     List<MealEntity> getMealsWithinLast7Days(Date startDate);
 
 

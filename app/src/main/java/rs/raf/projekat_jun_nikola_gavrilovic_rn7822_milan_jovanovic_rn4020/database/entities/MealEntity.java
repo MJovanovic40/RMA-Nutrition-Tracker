@@ -183,7 +183,7 @@ public class MealEntity {
 
     public MealEntity(){}
     public MealEntity(DetailedMealResponse dmr, String image, Date preparationDate, String mealCategory, float calories) {
-        this.id = Integer.parseInt(dmr.getIdMeal());
+        //this.id = Integer.parseInt(dmr.getIdMeal());
         this.strMeal = dmr.getStrMeal();
         this.strDrinkAlternate = dmr.getStrDrinkAlternate();
         this.strCategory = dmr.getStrCategory();
