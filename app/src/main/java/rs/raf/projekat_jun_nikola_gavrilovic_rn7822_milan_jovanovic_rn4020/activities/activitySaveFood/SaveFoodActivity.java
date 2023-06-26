@@ -25,18 +25,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.squareup.picasso.Picasso;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
 
-public class SaveFoodActivity extends AppCompatActivity {
+public class SaveFoodActivity extends AppCompatActivity implements IPickResult {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 2;
@@ -54,6 +57,8 @@ public class SaveFoodActivity extends AppCompatActivity {
 
     private Calendar selectedDate;
 
+    private ChooseImageDialog chooseImageDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +73,8 @@ public class SaveFoodActivity extends AppCompatActivity {
 
         saveButton = findViewById(R.id.saveButton);
         foodNameTextView = findViewById(R.id.foodNameTextView);
+
+        chooseImageDialog = new ChooseImageDialog();
 
         foodNameTextView.setText(intent.getStringExtra("foodName"));
         selectedDate = Calendar.getInstance(); // Inicijalno postavljamo odabrani datum na današnji datum
@@ -106,6 +113,9 @@ public class SaveFoodActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Open camera
+                //chooseImageDialog.show(getSupportFragmentManager(), "choose file");
+
+                PickImageDialog.build(new PickSetup()).show(SaveFoodActivity.this);
             }
         });
 
@@ -217,6 +227,18 @@ public class SaveFoodActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    @Override
+    public void onPickResult(PickResult r) {
+        if (r.getError() == null) {
+            System.out.println("Url: " + r.getUri());
+            Picasso.get().load(r.getUri()).into(foodImageView);
+        } else {
+            //Handle possible errors
+            //TODO: do what you have to do with r.getError();
+            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

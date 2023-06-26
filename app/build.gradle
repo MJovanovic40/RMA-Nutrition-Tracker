@@ -68,4 +68,6 @@ dependencies {
 
     //Picasso (Image library)
     implementation 'com.squareup.picasso:picasso:2.8'
+
+    implementation 'com.github.jrvansuita:PickImage:+';
 }
