@@ -33,15 +33,19 @@
         android:text="Tag:"
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/filterLinearLayout"
-        app:layout_constraintEnd_toStartOf="@+id/dropdown_menu"
+        app:layout_constraintEnd_toStartOf="@+id/tagEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
-    <Spinner
-        android:id="@+id/dropdown_menu"
-        android:layout_width="170dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/filterLinearLayout"
+    <EditText
+        android:id="@+id/tagEditText"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:inputType="text"
+        android:background="#EAE9EB"
         app:layout_constraintEnd_toStartOf="@+id/sortCheckBox"
         app:layout_constraintStart_toEndOf="@+id/dropdownLabel"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
