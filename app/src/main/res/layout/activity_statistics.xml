@@ -34,6 +34,11 @@
         android:layout_weight="1"
         android:paddingTop="16dp">
 
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/idGraphView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" />
         <!-- Ovdje možete dodati prikaz grafa koristeći biblioteku za grafikon (npr. MPAndroidChart) -->
 
     </FrameLayout>

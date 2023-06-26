@@ -17,8 +17,28 @@ import androidx.appcompat.app.AppCompatActivity;
 //import com.github.mikephil.charting.data.BarEntry;
 //import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 
+import com.jjoe64.graphview.DefaultLabelFormatter;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.MealEntity;
 
 public class StatisticsActivity extends AppCompatActivity {
 
@@ -110,4 +130,95 @@ public class StatisticsActivity extends AppCompatActivity {
 //        // Implementirati logiku za prikaz kalorijske statistike
 //        // na sličan način kao što je prikazan primjer za broj obroka
 //    }
+
+    private GraphView graphView;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_statistics);
+
+        graphView = findViewById(R.id.idGraphView);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7); // Subtract 7 days from the current date
+
+        Date startDate = calendar.getTime();
+
+        List<MealEntity> meals = AppState.getInstance().getDb().mealDao().getMealsWithinLast7Days(startDate);
+
+
+        Map<Integer, Integer> o = new HashMap<>();
+
+        Calendar calendarSave = Calendar.getInstance();
+
+        for(int i = 0; i < meals.size(); i++) {
+            MealEntity meal = meals.get(i);
+            calendarSave.setTime(meal.getDateSaved());
+            int c = 0;
+
+            if(o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null){
+                c = o.get(calendarSave.get(Calendar.DAY_OF_WEEK));
+            }
+            System.out.println(calendarSave.get(Calendar.DAY_OF_WEEK));
+            o.put(calendarSave.get(Calendar.DAY_OF_WEEK), c + 1);
+        }
+
+        DataPoint[] dataPoints = new DataPoint[7];
+
+        for(int i = 0; i < 7; i++) {
+            dataPoints[i] = new DataPoint(i, 0);
+        }
+
+        for(Integer date : o.keySet()) {
+            dataPoints[date] = new DataPoint(date, o.get(date));
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
+
+        // after adding data to our line graph series.
+        // on below line we are setting
+        // title for our graph view.
+        graphView.setTitle("Statistika");
+
+        // on below line we are setting
+        // text color to our graph view.
+        graphView.setTitleColor(R.color.purple_200);
+
+        // on below line we are setting
+        // our title text size.
+        graphView.setTitleTextSize(18);
+
+        // on below line we are adding
+        // data series to our graph view.
+        graphView.addSeries(series);
+
+        graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    switch((int) value) {
+                        case 1:
+                            return "Sunday";
+                        case 2:
+                            return "Monday";
+                        case 3:
+                            return "Tuesday";
+                        case 4:
+                            return "Wednesday";
+                        case 5:
+                            return "Thursday";
+                        case 6:
+                            return "Friday";
+                        case 7:
+                            return "Saturday";
+                    }
+                } else {
+                    // Use the default formatting for y-values
+                    return super.formatLabel(value, isValueX);
+                }
+                return "";
+            }
+        });
+
+    }
 }
