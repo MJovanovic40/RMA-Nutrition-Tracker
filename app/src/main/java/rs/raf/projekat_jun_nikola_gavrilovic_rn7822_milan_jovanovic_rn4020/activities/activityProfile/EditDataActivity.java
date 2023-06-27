@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
@@ -23,7 +24,8 @@ public class EditDataActivity extends AppCompatActivity {
     private EditText activityLevelEditText;
     private Button saveButton;
 
-    UserEntity user;
+    private UserEntity user;
+    private EditDataViewModel editDataViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,9 @@ public class EditDataActivity extends AppCompatActivity {
         String username = sharedPreferences.getString("User", "");
 
         user = AppState.getInstance().getDb().userDao().findByUsername(username);
+
+        editDataViewModel = new ViewModelProvider(this).get(EditDataViewModel.class);
+        editDataViewModel.setUserEntity(user);
 
         usernameEditText = findViewById(R.id.usernameEditText);
         ageEditText = findViewById(R.id.ageEditText);
@@ -66,17 +71,17 @@ public class EditDataActivity extends AppCompatActivity {
         String gender = genderEditText.getText().toString().trim();
         String activityLevel = activityLevelEditText.getText().toString().trim();
 
-        // TODO dodati logiku za dodavanje podataka u bazu
-        user.setUsername(username);
-        user.setAge(Integer.parseInt(age));
-        user.setHeight(Integer.parseInt(height));
-        user.setWeight(Float.parseFloat(weight));
-        user.setGender(gender);
-        user.setActivityLevel(activityLevel);
+        UserEntity userEntity = editDataViewModel.getUserEntity();
+        userEntity.setUsername(username);
+        userEntity.setAge(Integer.parseInt(age));
+        userEntity.setHeight(Integer.parseInt(height));
+        userEntity.setWeight(Float.parseFloat(weight));
+        userEntity.setGender(gender);
+        userEntity.setActivityLevel(activityLevel);
 
-        AppState.getInstance().getDb().userDao().update(user);
+        AppState.getInstance().getDb().userDao().update(userEntity);
 
-        Toast.makeText(this, "Izmene uspesno sacuvane", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Izmene uspešno sačuvane", Toast.LENGTH_SHORT).show();
         finish();
     }
 }

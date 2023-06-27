@@ -8,20 +8,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-//import com.github.mikephil.charting.charts.BarChart;
-//import com.github.mikephil.charting.components.Legend;
-//import com.github.mikephil.charting.components.XAxis;
-//import com.github.mikephil.charting.data.BarData;
-//import com.github.mikephil.charting.data.BarDataSet;
-//import com.github.mikephil.charting.data.BarEntry;
-//import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,99 +34,13 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.datab
 
 public class StatisticsActivity extends AppCompatActivity {
 
-//    private RadioGroup statisticsRadioGroup;
-//    private FrameLayout chartContainer;
-//    private BarChart chart;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_statistics);
-//
-//        statisticsRadioGroup = findViewById(R.id.statisticsRadioGroup);
-//        chartContainer = findViewById(R.id.chartContainer);
-//
-//        // Inicijalizacija grafa
-//        chart = new BarChart(this);
-//        chartContainer.addView(chart);
-//
-//        // Postavljanje osnovnih postavki grafa
-//        setupChart();
-//
-//        // Slušač promjene odabira radio dugmadi
-//        statisticsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-//                if (checkedId == R.id.mealCountRadioButton) {
-//                    // Odabrano je prikaz broja obroka
-//                    updateChartDataMealCount();
-//                } else if (checkedId == R.id.calorieCountRadioButton) {
-//                    // Odabrana je kalorijska statistika
-//                    updateChartDataCalorieCount();
-//                }
-//            }
-//        });
-//
-//        // Podrazumijevano prikazuje graf broja obroka
-//        updateChartDataMealCount();
-//    }
-//
-//    // Inicijalizacija postavki grafa
-//    private void setupChart() {
-//        chart.setDrawBarShadow(false);
-//        chart.setDrawValueAboveBar(true);
-//        chart.getDescription().setEnabled(false);
-//
-//        XAxis xAxis = chart.getXAxis();
-//        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-//        xAxis.setDrawGridLines(false);
-//        xAxis.setGranularity(1f);
-//        xAxis.setAxisMinimum(0f);
-//
-//        chart.getAxisLeft().setAxisMinimum(0f);
-//        chart.getAxisRight().setEnabled(false);
-//
-//        Legend legend = chart.getLegend();
-//        legend.setEnabled(false);
-//    }
-//
-//    // Ažuriranje podataka grafa za prikaz broja obroka
-//    private void updateChartDataMealCount() {
-//        List<BarEntry> entries = new ArrayList<>();
-//        // Učitavanje podataka iz lokalne baze (broj obroka za svaki dan u prethodnih 7 dana)
-//        // i dodavanje vrijednosti u listu entries
-//
-//        // Primjer podataka:
-//        entries.add(new BarEntry(1f, 3)); // Dan 1: 3 obroka
-//        entries.add(new BarEntry(2f, 4)); // Dan 2: 4 obroka
-//        entries.add(new BarEntry(3f, 2)); // Dan 3: 2 obroka
-//        entries.add(new BarEntry(4f, 5)); // Dan 4: 5 obroka
-//        entries.add(new BarEntry(5f, 1)); // Dan 5: 1 obrok
-//        entries.add(new BarEntry(6f, 3)); // Dan 6: 3 obroka
-//        entries.add(new BarEntry(7f, 2)); // Dan 7: 2 obroka
-//
-//        BarDataSet dataSet = new BarDataSet(entries, "Broj obroka");
-//        dataSet.setColor(Color.BLUE);
-//        dataSet.setValueTextColor(Color.BLACK);
-//
-//        List<IBarDataSet> dataSets = new ArrayList<>();
-//        dataSets.add(dataSet);
-//
-//        BarData data = new BarData(dataSets);
-//        chart.setData(data);
-//        chart.invalidate();
-//    }
-//
-//    // Ažuriranje podataka grafa za prikaz kalorijske statistike
-//    private void updateChartDataCalorieCount() {
-//        // Implementirati logiku za prikaz kalorijske statistike
-//        // na sličan način kao što je prikazan primjer za broj obroka
-//    }
-
     private GraphView graphView;
     private GraphView graphViewCalories;
 
     private RadioGroup radioGroup;
+
+    private StatisticsViewModel statisticsViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +50,8 @@ public class StatisticsActivity extends AppCompatActivity {
         graphViewCalories = findViewById(R.id.idGraphViewCalories);
         radioGroup = findViewById(R.id.statisticsRadioGroup);
 
+        statisticsViewModel = new ViewModelProvider(this).get(StatisticsViewModel.class);
+
         setupGraphViewMealNumber();
         setupGraphViewCalories();
 
@@ -152,7 +60,7 @@ public class StatisticsActivity extends AppCompatActivity {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if(i == R.id.mealCountRadioButton) {
+                if (i == R.id.mealCountRadioButton) {
                     graphViewCalories.setVisibility(View.GONE);
                     graphView.setVisibility(View.VISIBLE);
                 } else {
@@ -161,10 +69,10 @@ public class StatisticsActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
-    private void setupGraphViewCalories() {Calendar calendar = Calendar.getInstance();
+    private void setupGraphViewCalories() {
+        Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -7); // Subtract 7 days from the current date
 
         Date startDate = calendar.getTime();
@@ -175,12 +83,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Calendar calendarSave = Calendar.getInstance();
 
-        for(int i = 0; i < meals.size(); i++) {
+        for (int i = 0; i < meals.size(); i++) {
             MealEntity meal = meals.get(i);
             calendarSave.setTime(meal.getPreparationDate());
             float c = 0;
 
-            if(o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null){
+            if (o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null) {
                 c = o.get(calendarSave.get(Calendar.DAY_OF_WEEK));
             }
             o.put(calendarSave.get(Calendar.DAY_OF_WEEK), meal.getCalories());
@@ -188,38 +96,26 @@ public class StatisticsActivity extends AppCompatActivity {
 
         DataPoint[] dataPoints = new DataPoint[7];
 
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             dataPoints[i] = new DataPoint(i, 0);
         }
 
-        for(Integer date : o.keySet()) {
+        for (Integer date : o.keySet()) {
             dataPoints[date] = new DataPoint(date, o.get(date));
         }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
 
-        // after adding data to our line graph series.
-        // on below line we are setting
-        // title for our graph view.
         graphViewCalories.setTitle("Statistika broja obroka");
-
-        // on below line we are setting
-        // text color to our graph view.
         graphViewCalories.setTitleColor(R.color.black);
-
-        // on below line we are setting
-        // our title text size.
         graphViewCalories.setTitleTextSize(72);
-
-        // on below line we are adding
-        // data series to our graph view.
         graphViewCalories.addSeries(series);
 
         graphViewCalories.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
             @Override
             public String formatLabel(double value, boolean isValueX) {
                 if (isValueX) {
-                    switch((int) value) {
+                    switch ((int) value) {
                         case 1:
                             return "Sunday";
                         case 2:
@@ -236,18 +132,19 @@ public class StatisticsActivity extends AppCompatActivity {
                             return "Saturday";
                     }
                 } else {
-                    // Use the default formatting for y-values
                     return super.formatLabel(value, isValueX);
                 }
                 return "";
             }
         });
+
+        Map<Integer, Float> caloriesData = new HashMap<>(o);
+        statisticsViewModel.setCaloriesData(caloriesData);
     }
 
-
-    private void setupGraphViewMealNumber(){
+    private void setupGraphViewMealNumber() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, -7); // Subtract 7 days from the current date
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
 
         Date startDate = calendar.getTime();
 
@@ -257,12 +154,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
         Calendar calendarSave = Calendar.getInstance();
 
-        for(int i = 0; i < meals.size(); i++) {
+        for (int i = 0; i < meals.size(); i++) {
             MealEntity meal = meals.get(i);
             calendarSave.setTime(meal.getPreparationDate());
             int c = 0;
 
-            if(o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null){
+            if (o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null) {
                 c = o.get(calendarSave.get(Calendar.DAY_OF_WEEK));
             }
             System.out.println(calendarSave.get(Calendar.DAY_OF_WEEK));
@@ -271,38 +168,26 @@ public class StatisticsActivity extends AppCompatActivity {
 
         DataPoint[] dataPoints = new DataPoint[7];
 
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             dataPoints[i] = new DataPoint(i, 0);
         }
 
-        for(Integer date : o.keySet()) {
+        for (Integer date : o.keySet()) {
             dataPoints[date] = new DataPoint(date, o.get(date));
         }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
 
-        // after adding data to our line graph series.
-        // on below line we are setting
-        // title for our graph view.
         graphView.setTitle("Statistika broja obroka");
-
-        // on below line we are setting
-        // text color to our graph view.
         graphView.setTitleColor(R.color.black);
-
-        // on below line we are setting
-        // our title text size.
         graphView.setTitleTextSize(72);
-
-        // on below line we are adding
-        // data series to our graph view.
         graphView.addSeries(series);
 
         graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
             @Override
             public String formatLabel(double value, boolean isValueX) {
                 if (isValueX) {
-                    switch((int) value) {
+                    switch ((int) value) {
                         case 1:
                             return "Sunday";
                         case 2:
@@ -319,11 +204,14 @@ public class StatisticsActivity extends AppCompatActivity {
                             return "Saturday";
                     }
                 } else {
-                    // Use the default formatting for y-values
                     return super.formatLabel(value, isValueX);
                 }
                 return "";
             }
         });
+
+        Map<Integer, Integer> mealCountData = new HashMap<>(o);
+        statisticsViewModel.setMealCountData(mealCountData);
     }
 }
+
