@@ -7,10 +7,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,17 +41,15 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.m
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.api.providers.MealProvider;
 
 public class HomeFragment extends Fragment {
-    private RecyclerView categoryRecyclerView;
+    /*private RecyclerView categoryRecyclerView;
     private CategoryAdapter categoryAdapter;
     private ProgressBar categoryProgressBar;
     private EditText searchEditText;
 
     private Spinner searchTypeSpinner;
 
-
     private Button searchBtn;
 
-//    private SoftInputAssist softInputAssist;
     private MealProvider mealProvider;
     private List<Category> categories;
 
@@ -59,8 +60,6 @@ public class HomeFragment extends Fragment {
         categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-//        softInputAssist = new SoftInputAssist(getActivity());
-
         categoryProgressBar = view.findViewById(R.id.categoryProgressBar);
         searchEditText = view.findViewById(R.id.searchEditText);
         searchBtn = view.findViewById(R.id.searchButton);
@@ -70,22 +69,6 @@ public class HomeFragment extends Fragment {
 
         categories = new ArrayList<>();
 
-        /*searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                performSearch(editable.toString());
-            }
-        });*/
 
         List<String> searchTypes = new ArrayList<>();
         searchTypes.add("Meal name");
@@ -188,23 +171,99 @@ public class HomeFragment extends Fragment {
         }
 
         updateAdapter(satisfiedCategories);
+    }*/
+    private RecyclerView categoryRecyclerView;
+    private CategoryAdapter categoryAdapter;
+    private ProgressBar categoryProgressBar;
+    private EditText searchEditText;
+    private Spinner searchTypeSpinner;
+    private Button searchBtn;
+
+    private HomeViewModel homeViewModel;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        categoryRecyclerView = view.findViewById(R.id.categoryRecyclerView);
+        categoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        categoryProgressBar = view.findViewById(R.id.categoryProgressBar);
+        searchEditText = view.findViewById(R.id.searchEditText);
+        searchBtn = view.findViewById(R.id.searchButton);
+        searchTypeSpinner = view.findViewById(R.id.searchTypeSpinner);
+
+        // Set up the spinner and adapter
+        ArrayAdapter<CharSequence> searchTypeAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.search_types,
+                android.R.layout.simple_spinner_item
+        );
+        searchTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        searchTypeSpinner.setAdapter(searchTypeAdapter);
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(searchEditText.getText().toString().isEmpty()){
+                    Toast.makeText(getContext(), "Seach is empty.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(getContext(), CategoryFoodActivity.class);
+                intent.putExtra("origin", "search");
+                intent.putExtra("searchType", searchTypeSpinner.getSelectedItem().toString());
+                intent.putExtra("searchQuery", searchEditText.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+        return view;
     }
 
-//    @Override
-//    public void onResume() {
-//        softInputAssist.onResume();
-//        super.onResume();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        softInputAssist.onPause();
-//        super.onPause();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        softInputAssist.onDestroy();
-//        super.onDestroy();
-//    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        categoryRecyclerView.setVisibility(View.GONE);
+        categoryProgressBar.setVisibility(View.VISIBLE);
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.getCategoryListLiveData().observe(getViewLifecycleOwner(), new Observer<List<Category>>() {
+            @Override
+            public void onChanged(List<Category> categories) {
+                updateAdapter(categories);
+            }
+        });
+
+        homeViewModel.fetchCategories();
+    }
+
+    private void updateAdapter(List<Category> categories) {
+        categoryAdapter = new CategoryAdapter(categories, new CategoryAdapter.OnCategoryClickListener() {
+            @Override
+            public void onCategoryClick(Category category) {
+                Intent intent = new Intent(requireContext(), CategoryFoodActivity.class);
+                intent.putExtra("origin", "category");
+                intent.putExtra("categoryName", category.getNazivKategorije());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCategoryOptionsClick(Category category) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Category Description");
+                builder.setMessage(category.getOpisKategorije());
+                builder.setPositiveButton("OK", null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+        categoryRecyclerView.setAdapter(categoryAdapter);
+
+        categoryRecyclerView.setVisibility(View.VISIBLE);
+        categoryProgressBar.setVisibility(View.GONE);
+    }
+
 }
