@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,38 +27,41 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activ
 public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickListener {
     private RecyclerView recyclerViewMenu;
     private FoodAdapter foodAdapter;
-    private List<Food> foodList;
+    private MenuViewModel menuViewModel;
 
-    public MenuFragment() {
-        // Required empty public constructor
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        menuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
+        menuViewModel.getFoodListLiveData().observe(this, foodList -> {
+            foodAdapter.setItems(foodList);
+            foodAdapter.notifyDataSetChanged();
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         TextView textViewMenu = view.findViewById(R.id.textViewMenu);
         recyclerViewMenu = view.findViewById(R.id.recyclerViewMenu);
 
-        // Set the text centered
         textViewMenu.setGravity(View.TEXT_ALIGNMENT_CENTER);
 
-        // Initialize the RecyclerView
         recyclerViewMenu.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //foodList = getMenuItems();
-        foodList = new ArrayList<>();
 
-        List<MealEntity> savedMenu = AppState.getInstance().getDb().mealDao().findAll();
-        for(MealEntity meal: savedMenu) {
-            foodList.add(new Food(String.valueOf(meal.getId()), meal.getStrMeal(), meal.getStrMealThumb(), meal.getCalories()));
-        }
-
-        foodAdapter = new FoodAdapter(foodList, this);
+        foodAdapter = new FoodAdapter(new ArrayList<>(), this);
         recyclerViewMenu.setAdapter(foodAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        menuViewModel.loadMenuItems();
     }
 
     @Override
@@ -64,13 +70,5 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
         intent.putExtra("menuItem", food.getIme());
         intent.putExtra("menuFoodId", food.getId());
         startActivity(intent);
-    }
-
-    private List<Food> getMenuItems() {
-        List<Food> menuItems = new ArrayList<>();
-        menuItems.add(new Food("Ime", "NekaSlika"));
-        menuItems.add(new Food("Ime23", "NekaSlika23"));
-        menuItems.add(new Food("Ime44", "NekaSlika44"));
-        return menuItems;
     }
 }
