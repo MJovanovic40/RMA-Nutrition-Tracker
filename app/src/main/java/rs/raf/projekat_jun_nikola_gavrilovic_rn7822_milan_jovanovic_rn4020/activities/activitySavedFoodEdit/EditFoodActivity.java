@@ -37,6 +37,8 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
 
     private String mealImage;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +83,9 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
 
                 AppState.getInstance().getDb().mealDao().update(meal);
 
-                onBackPressed();
+                //onBackPressed();
+                //startActivity(new Intent(EditFoodActivity.this, HomeActivity.class));
+                finish();
                 Toast.makeText(EditFoodActivity.this, "Izmene uspesno sacuvane!", Toast.LENGTH_SHORT).show();
             }
         });

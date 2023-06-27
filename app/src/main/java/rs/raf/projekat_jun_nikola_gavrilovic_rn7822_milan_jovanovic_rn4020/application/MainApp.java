@@ -31,6 +31,11 @@ public class MainApp extends Application {
             userEntity.setId(1);
             userEntity.setUsername("test");
             userEntity.setPassword("Test1234");
+            userEntity.setAge(0);
+            userEntity.setGender("MALE");
+            userEntity.setHeight(0);
+            userEntity.setWeight(0);
+            userEntity.setActivityLevel("Low");
 
             AppState.getInstance().getDb().userDao().add(userEntity);
         }

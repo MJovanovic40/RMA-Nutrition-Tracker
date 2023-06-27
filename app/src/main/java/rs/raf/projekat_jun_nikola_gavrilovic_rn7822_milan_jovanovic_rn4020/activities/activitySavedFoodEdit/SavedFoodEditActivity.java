@@ -30,6 +30,24 @@ public class SavedFoodEditActivity extends AppCompatActivity {
     private Button editButton;
     private Button deleteButton;
 
+    private boolean needsRepaint = false;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(needsRepaint){
+            recreate();
+            needsRepaint = false;
+        }
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        needsRepaint = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

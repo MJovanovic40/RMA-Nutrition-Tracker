@@ -36,8 +36,6 @@ public class FilterFragment extends Fragment {
     private Spinner filterSpinner;
     private Button filterBtn;
 
-    private MealProvider mealProvider;
-    private CalorieProvider calorieProvider;
 
     boolean maximum = false;
     public FilterFragment() {
@@ -61,8 +59,6 @@ public class FilterFragment extends Fragment {
 
         filterBtn = view.findViewById(R.id.filterButton);
 
-        mealProvider = new MealProvider();
-        calorieProvider = new CalorieProvider();
 
         List<String> filterOptions = new ArrayList<>();
         filterOptions.add("Kategorija");

@@ -15,6 +15,21 @@ public class UserEntity {
     @ColumnInfo(name="password")
     private String password;
 
+    @ColumnInfo(name="age")
+    private int age;
+
+    @ColumnInfo(name="height")
+    private int height;
+
+    @ColumnInfo(name="weight")
+    private float weight;
+
+    @ColumnInfo(name="gender")
+    private String gender;
+
+    @ColumnInfo(name="activity_level")
+    private String activityLevel;
+
     public UserEntity() {
     }
 
@@ -40,5 +55,45 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getActivityLevel() {
+        return activityLevel;
+    }
+
+    public void setActivityLevel(String activityLevel) {
+        this.activityLevel = activityLevel;
     }
 }
