@@ -30,20 +30,15 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
     private MenuViewModel menuViewModel;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        menuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
-        menuViewModel.getFoodListLiveData().observe(this, foodList -> {
-            foodAdapter.setItems(foodList);
-            foodAdapter.notifyDataSetChanged();
-        });
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
+
+        menuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
+        menuViewModel.getFoodListLiveData().observe(getActivity(), foodList -> {
+            foodAdapter.setItems(foodList);
+            foodAdapter.notifyDataSetChanged();
+        });
 
         TextView textViewMenu = view.findViewById(R.id.textViewMenu);
         recyclerViewMenu = view.findViewById(R.id.recyclerViewMenu);
