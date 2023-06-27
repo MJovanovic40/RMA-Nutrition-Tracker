@@ -1,6 +1,9 @@
 package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activityProfile;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import java.util.List;
 import java.util.Map;
 
@@ -8,32 +11,37 @@ import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.datab
 
 public class StatisticsViewModel extends ViewModel {
 
-    private List<MealEntity> meals;
-    private Map<Integer, Integer> mealCountData;
-    private Map<Integer, Float> caloriesData;
+    private MutableLiveData<List<MealEntity>> mealsLiveData;
+    private MutableLiveData<Map<Integer, Integer>> mealCountDataLiveData;
+    private MutableLiveData<Map<Integer, Float>> caloriesDataLiveData;
 
-    public void setMeals(List<MealEntity> meals) {
-        this.meals = meals;
+    public StatisticsViewModel() {
+        mealsLiveData = new MutableLiveData<>();
+        mealCountDataLiveData = new MutableLiveData<>();
+        caloriesDataLiveData = new MutableLiveData<>();
     }
 
-    public List<MealEntity> getMeals() {
-        return meals;
+    public LiveData<List<MealEntity>> getMealsLiveData() {
+        return mealsLiveData;
+    }
+
+    public void setMeals(List<MealEntity> meals) {
+        mealsLiveData.setValue(meals);
+    }
+
+    public LiveData<Map<Integer, Integer>> getMealCountDataLiveData() {
+        return mealCountDataLiveData;
     }
 
     public void setMealCountData(Map<Integer, Integer> mealCountData) {
-        this.mealCountData = mealCountData;
+        mealCountDataLiveData.setValue(mealCountData);
     }
 
-    public Map<Integer, Integer> getMealCountData() {
-        return mealCountData;
+    public LiveData<Map<Integer, Float>> getCaloriesDataLiveData() {
+        return caloriesDataLiveData;
     }
 
     public void setCaloriesData(Map<Integer, Float> caloriesData) {
-        this.caloriesData = caloriesData;
-    }
-
-    public Map<Integer, Float> getCaloriesData() {
-        return caloriesData;
+        caloriesDataLiveData.setValue(caloriesData);
     }
 }
-

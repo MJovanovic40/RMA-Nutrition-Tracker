@@ -84,4 +84,5 @@ public class EditDataActivity extends AppCompatActivity {
         Toast.makeText(this, "Izmene uspešno sačuvane", Toast.LENGTH_SHORT).show();
         finish();
     }
+
 }

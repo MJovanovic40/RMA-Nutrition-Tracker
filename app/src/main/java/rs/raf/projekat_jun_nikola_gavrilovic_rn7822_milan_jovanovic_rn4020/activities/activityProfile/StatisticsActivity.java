@@ -8,6 +8,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -69,6 +70,20 @@ public class StatisticsActivity extends AppCompatActivity {
                 }
             }
         });
+
+        statisticsViewModel.getMealCountDataLiveData().observe(this, new Observer<Map<Integer, Integer>>() {
+            @Override
+            public void onChanged(Map<Integer, Integer> mealCountData) {
+                updateGraphViewMealNumber(mealCountData);
+            }
+        });
+
+        statisticsViewModel.getCaloriesDataLiveData().observe(this, new Observer<Map<Integer, Float>>() {
+            @Override
+            public void onChanged(Map<Integer, Float> caloriesData) {
+                updateGraphViewCalories(caloriesData);
+            }
+        });
     }
 
     private void setupGraphViewCalories() {
@@ -101,13 +116,13 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         for (Integer date : o.keySet()) {
-            dataPoints[date] = new DataPoint(date, o.get(date));
+            dataPoints[date - 1] = new DataPoint(date, o.get(date));
         }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
 
-        graphViewCalories.setTitle("Statistika broja obroka");
-        graphViewCalories.setTitleColor(R.color.black);
+        graphViewCalories.setTitle("Statistika kalorija");
+        graphViewCalories.setTitleColor(Color.BLACK);
         graphViewCalories.setTitleTextSize(72);
         graphViewCalories.addSeries(series);
 
@@ -131,15 +146,10 @@ public class StatisticsActivity extends AppCompatActivity {
                         case 7:
                             return "Saturday";
                     }
-                } else {
-                    return super.formatLabel(value, isValueX);
                 }
-                return "";
+                return super.formatLabel(value, isValueX);
             }
         });
-
-        Map<Integer, Float> caloriesData = new HashMap<>(o);
-        statisticsViewModel.setCaloriesData(caloriesData);
     }
 
     private void setupGraphViewMealNumber() {
@@ -162,7 +172,6 @@ public class StatisticsActivity extends AppCompatActivity {
             if (o.containsKey(calendarSave.get(Calendar.DAY_OF_WEEK)) && o.get(calendarSave.get(Calendar.DAY_OF_WEEK)) != null) {
                 c = o.get(calendarSave.get(Calendar.DAY_OF_WEEK));
             }
-            System.out.println(calendarSave.get(Calendar.DAY_OF_WEEK));
             o.put(calendarSave.get(Calendar.DAY_OF_WEEK), c + 1);
         }
 
@@ -173,13 +182,13 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         for (Integer date : o.keySet()) {
-            dataPoints[date] = new DataPoint(date, o.get(date));
+            dataPoints[date - 1] = new DataPoint(date, o.get(date));
         }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
 
         graphView.setTitle("Statistika broja obroka");
-        graphView.setTitleColor(R.color.black);
+        graphView.setTitleColor(Color.BLACK);
         graphView.setTitleTextSize(72);
         graphView.addSeries(series);
 
@@ -203,15 +212,43 @@ public class StatisticsActivity extends AppCompatActivity {
                         case 7:
                             return "Saturday";
                     }
-                } else {
-                    return super.formatLabel(value, isValueX);
                 }
-                return "";
+                return super.formatLabel(value, isValueX);
             }
         });
+    }
 
-        Map<Integer, Integer> mealCountData = new HashMap<>(o);
-        statisticsViewModel.setMealCountData(mealCountData);
+    private void updateGraphViewMealNumber(Map<Integer, Integer> mealCountData) {
+        DataPoint[] dataPoints = new DataPoint[7];
+
+        for (int i = 0; i < 7; i++) {
+            dataPoints[i] = new DataPoint(i, 0);
+        }
+
+        for (Integer date : mealCountData.keySet()) {
+            dataPoints[date - 1] = new DataPoint(date, mealCountData.get(date));
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
+
+        graphView.removeAllSeries();
+        graphView.addSeries(series);
+    }
+
+    private void updateGraphViewCalories(Map<Integer, Float> caloriesData) {
+        DataPoint[] dataPoints = new DataPoint[7];
+
+        for (int i = 0; i < 7; i++) {
+            dataPoints[i] = new DataPoint(i, 0);
+        }
+
+        for (Integer date : caloriesData.keySet()) {
+            dataPoints[date - 1] = new DataPoint(date, caloriesData.get(date));
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints);
+
+        graphViewCalories.removeAllSeries();
+        graphViewCalories.addSeries(series);
     }
 }
-
