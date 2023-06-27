@@ -35,9 +35,11 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         menuViewModel = new ViewModelProvider(this).get(MenuViewModel.class);
-        menuViewModel.getFoodListLiveData().observe(getActivity(), foodList -> {
-            foodAdapter.setItems(foodList);
-            foodAdapter.notifyDataSetChanged();
+        menuViewModel.getFoodListLiveData().observe(getViewLifecycleOwner(), foodList -> {
+            if (foodAdapter != null) {
+                foodAdapter.setItems(foodList);
+                foodAdapter.notifyDataSetChanged();
+            }
         });
 
         TextView textViewMenu = view.findViewById(R.id.textViewMenu);
@@ -67,3 +69,4 @@ public class MenuFragment extends Fragment implements FoodAdapter.OnFoodClickLis
         startActivity(intent);
     }
 }
+

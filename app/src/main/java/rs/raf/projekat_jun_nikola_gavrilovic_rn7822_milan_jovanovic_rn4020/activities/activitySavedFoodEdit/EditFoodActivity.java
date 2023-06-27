@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.squareup.picasso.Picasso;
 import com.vansuita.pickimage.bean.PickResult;
@@ -18,8 +19,6 @@ import com.vansuita.pickimage.listeners.IPickResult;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.AppState;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.R;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.activitySaveFood.SaveFoodActivity;
-import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.HomeActivity;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.entities.MealEntity;
 
 public class EditFoodActivity extends AppCompatActivity implements IPickResult {
@@ -37,7 +36,8 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
 
     private String mealImage;
 
-
+    private MealEntity meal;
+    private EditFoodViewModel editFoodViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,9 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
         ingredientsEditText = findViewById(R.id.ingredientsEditText);
         saveButton = findViewById(R.id.saveButton);
 
-        MealEntity meal = AppState.getInstance().getDb().mealDao().find(Integer.parseInt(getIntent().getStringExtra("menuFoodId")));
+        editFoodViewModel = new ViewModelProvider(this).get(EditFoodViewModel.class);
+
+        meal = AppState.getInstance().getDb().mealDao().find(Integer.parseInt(getIntent().getStringExtra("menuFoodId")));
 
         mealImage = meal.getStrMealThumb();
         Picasso.get().load(mealImage).into(foodImageView);
@@ -63,12 +65,13 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
         foodNameEditText.setText(meal.getStrMeal());
         categoryEditText.setText(meal.getMealCategory());
         oblastEditText.setText(meal.getStrArea());
-
         caloriesEditText.setText(String.valueOf(meal.getCalories()));
         instructionsEditText.setText(meal.getStrInstructions());
         tagsEditText.setText(meal.getStrTags());
         videoLinkEditText.setText(meal.getStrYoutube());
         ingredientsEditText.setText(meal.getSastojci());
+
+        editFoodViewModel.setMealEntity(meal);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,14 +86,12 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
 
                 AppState.getInstance().getDb().mealDao().update(meal);
 
-                //onBackPressed();
-                //startActivity(new Intent(EditFoodActivity.this, HomeActivity.class));
                 finish();
                 Toast.makeText(EditFoodActivity.this, "Izmene uspesno sacuvane!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        foodImageView.setOnClickListener(new View.OnClickListener(){
+        foodImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PickImageDialog.build(new PickSetup()).show(EditFoodActivity.this);
@@ -100,11 +101,11 @@ public class EditFoodActivity extends AppCompatActivity implements IPickResult {
 
     @Override
     public void onPickResult(PickResult r) {
-            if (r.getError() == null) {
-                Picasso.get().load(r.getUri()).into(foodImageView);
-                mealImage = r.getUri().toString();
-            } else {
-                Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
-            }
+        if (r.getError() == null) {
+            Picasso.get().load(r.getUri()).into(foodImageView);
+            mealImage = r.getUri().toString();
+        } else {
+            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }
