@@ -2,15 +2,19 @@ package rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020;
 
 import androidx.room.Room;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.Category;
+import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.activities.homeActivity.fragments.models.Obrok;
 import rs.raf.projekat_jun_nikola_gavrilovic_rn7822_milan_jovanovic_rn4020.database.AppDatabase;
 
 public class AppState {
     private static AppState instance = null;
     private AppDatabase db;
     private List<Category> categories;
+
+    private List<Obrok> mealPlan;
 
     public static AppState getInstance() {
         if(instance == null){
@@ -21,6 +25,8 @@ public class AppState {
 
 
     private AppState(){
+        categories = new ArrayList<>();
+        mealPlan = new ArrayList<>();
     }
 
     public static void setInstance(AppState instance) {

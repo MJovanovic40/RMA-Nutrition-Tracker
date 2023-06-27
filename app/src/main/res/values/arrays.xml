@@ -8,4 +8,15 @@
         <item>Meal name</item>
         <item>Ingredient</item>
     </string-array>
+
+    <string-array name="meal_categories">
+        <item>Breakfast</item>
+        <item>Lunch</item>
+        <item>Dinner</item>
+        <item>Snack</item>
+    </string-array>
+    <string-array name="food_storage_type">
+        <item>Database</item>
+        <item>API</item>
+    </string-array>
 </resources>
