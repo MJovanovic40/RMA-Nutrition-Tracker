@@ -500,16 +500,6 @@ public class CategoryFoodActivity extends AppCompatActivity {
                                                 return;
                                             }
                                         }
-                                        /*if(response.body().getMeals().get(0).getStrTags() != null && tags.size() > 0){
-                                            List<String> mealTags = new ArrayList<>(Arrays.asList(response.body().getMeals().get(0).getStrTags().split(",")));
-                                            for(String s: tags) {
-                                                if(!mealTags.contains(s)){
-                                                    return;
-                                                }
-                                            }
-                                        } else if(tags.size() <= 0){
-                                            return;
-                                        }*/
 
                                         calorieProvider.getCalorieService().fetchCaloriesForMeal(response.body().getMeals().get(0).getSastojci()).enqueue(new Callback<List<CalorieResponse>>() {
                                             @Override
